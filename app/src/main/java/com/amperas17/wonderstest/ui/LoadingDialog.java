@@ -50,7 +50,7 @@ public class LoadingDialog extends DialogFragment {
         }
     }
 
-    interface ILoadingDialog{
+    public interface ILoadingDialog{
         void onLoadingDialogCancel();
     }
 }

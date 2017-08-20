@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.ui;
+package com.amperas17.wonderstest.ui.auth;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +11,11 @@ import android.widget.Toast;
 import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.model.User;
+import com.amperas17.wonderstest.model.realm.RealmUser;
+import com.amperas17.wonderstest.ui.LoadingDialog;
+import com.amperas17.wonderstest.ui.userinfo.UserInfoActivity;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +27,7 @@ public class AuthActivity extends AppCompatActivity
     EditText etPassword;
     Button btnNext;
 
+    Realm realm;
     Call<User> call;
 
     @Override
@@ -33,7 +38,9 @@ public class AuthActivity extends AppCompatActivity
         etPassword = (EditText) findViewById(R.id.etPassword);
         btnNext = (Button) findViewById(R.id.btnNext);
 
-        getSupportActionBar().setTitle("Authorization");
+        getSupportActionBar().setTitle(R.string.auth_title);
+
+        realm = Realm.getDefaultInstance();
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,9 +52,9 @@ public class AuthActivity extends AppCompatActivity
 
     private void verifyFieldsAndAuth() {
         if (etLogin.getText().toString().isEmpty()) {
-            etLogin.setError("Empty login");
+            etLogin.setError(getString(R.string.empty_login));
         } else if (etPassword.getText().toString().isEmpty()) {
-            etPassword.setError("Empty password");
+            etPassword.setError(getString(R.string.empty_password));
         } else {
             auth(etLogin.getText().toString(), etPassword.getText().toString());
         }
@@ -56,17 +63,40 @@ public class AuthActivity extends AppCompatActivity
     public void auth(String login, String password) {
         String authHeader = getAuthHeader(login, password);
         call = App.getGitHubApi().getUser(authHeader);
+        LoadingDialog.show(getSupportFragmentManager());
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                User user = response.body();
+                onAuthSuccess(response.body());
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(AuthActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<User> call, Throwable th) {
+                onAuthError(th);
             }
         });
+    }
+
+    private void onAuthSuccess(User user) {
+        saveUser(user);
+        LoadingDialog.dismiss(getSupportFragmentManager());
+        startActivity(UserInfoActivity.newIntent(this, user));
+    }
+
+    private void saveUser(User user) {
+        final RealmUser realmUser = new RealmUser(user);
+        if (!realm.isClosed())
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.insertOrUpdate(realmUser);
+                }
+            });
+    }
+
+    private void onAuthError(Throwable th) {
+        LoadingDialog.dismiss(getSupportFragmentManager());
+        Toast.makeText(AuthActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private String getAuthHeader(String login, String password) {
@@ -75,6 +105,18 @@ public class AuthActivity extends AppCompatActivity
 
     @Override
     public void onLoadingDialogCancel() {
-        call.cancel();
+        if (call != null)
+            call.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (call != null) {
+            call.cancel();
+        } else {
+            call = null;
+        }
+        realm.close();
     }
 }

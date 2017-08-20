@@ -45,6 +45,16 @@ public class User implements Parcelable {
         }
     };
 
+    public User(String login, String avatarUrl, String url, String html_url, String reposUrl, String type, String company) {
+        this.login = login;
+        this.avatarUrl = avatarUrl;
+        this.url = url;
+        this.html_url = html_url;
+        this.reposUrl = reposUrl;
+        this.type = type;
+        this.company = company;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -59,5 +69,61 @@ public class User implements Parcelable {
         dest.writeString(reposUrl);
         dest.writeString(type);
         dest.writeString(company);
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getHtml_url() {
+        return html_url;
+    }
+
+    public void setHtml_url(String html_url) {
+        this.html_url = html_url;
+    }
+
+    public String getReposUrl() {
+        return reposUrl;
+    }
+
+    public void setReposUrl(String reposUrl) {
+        this.reposUrl = reposUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 }

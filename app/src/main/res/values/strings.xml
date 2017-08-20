@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WondersTest</string>
+    <string name="login_hint">login</string>
+    <string name="password_hint">password</string>
+    <string name="next">Next</string>
+    <string name="auth_title">Authorization</string>
+    <string name="empty_login">Empty login</string>
+    <string name="empty_password">Empty password</string>
+    <string name="exit">Exit</string>
+    <string name="exit_alert_message">All your data would be cleared! Are you sure you want to exit?</string>
+    <string name="error_occured_toast">Error occurred. Try again please.</string>
 </resources>
