@@ -4,30 +4,57 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
+import com.amperas17.wonderstest.model.Repo;
 import com.amperas17.wonderstest.model.User;
+import com.amperas17.wonderstest.model.realm.RealmRepo;
+import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.LoadingDialog;
+import com.amperas17.wonderstest.ui.issues.IssuesActivity;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class UserInfoActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog {
 
-    public static final String USER_TAG = "user";
+    public static final String USER_ARG = "user";
 
-    Realm realm;
-    User user;
+    public static final String IS_UPDATING_TAG = "isUpdating";
+
+    private Realm realm;
+    private User user;
+    private Call<ArrayList<Repo>> call;
+    private RepoAdapter repoAdapter;
+    RealmResults<RealmRepo> repos;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView tvNoData;
+
+    private boolean isUpdating = false;
 
     public static Intent newIntent(Context context, User user) {
         Intent intent = new Intent(context, UserInfoActivity.class);
-        intent.putExtra(USER_TAG, user);
+        intent.putExtra(USER_ARG, user);
         return intent;
     }
 
@@ -36,10 +63,111 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        user = getIntent().getParcelableExtra(USER_TAG);
+        realm = Realm.getDefaultInstance();
+
+        user = getIntent().getParcelableExtra(USER_ARG);
         getSupportActionBar().setTitle(user.getLogin());
 
-        realm = Realm.getDefaultInstance();
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getRepos();
+            }
+        });
+
+        tvNoData = (TextView) findViewById(R.id.tvNoData);
+
+        repos = realm.where(RealmRepo.class)
+                .equalTo(RealmRepo.OWNER_LOGIN, user.getLogin()).findAll();
+        repos.addChangeListener(new RealmChangeListener<RealmResults<RealmRepo>>() {
+            @Override
+            public void onChange(RealmResults<RealmRepo> realmRepos) {
+                if (!realmRepos.isEmpty()) {
+                    tvNoData.setVisibility(View.GONE);
+                    repoAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        repoAdapter = new RepoAdapter(new AdapterItemClickListener<Repo>() {
+            @Override
+            public void onItemClick(Repo repoItem) {
+                startActivity(IssuesActivity.newIntent(UserInfoActivity.this, repoItem));
+            }
+        }, repos);
+
+        if (repos.isEmpty()) {
+            tvNoData.setVisibility(View.VISIBLE);
+        }
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewRepoList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(repoAdapter);
+
+        if (savedInstanceState != null) {
+            isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
+            if (isUpdating) {
+                getRepos();
+            }
+        } else {
+            getRepos();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_UPDATING_TAG, isUpdating);
+    }
+
+    private void getRepos() {
+        swipeRefreshLayout.setRefreshing(true);
+        isUpdating = true;
+        call = App.getGitHubApi().getRepos(user.getLogin());
+        call.enqueue(new Callback<ArrayList<Repo>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Repo>> call, Response<ArrayList<Repo>> response) {
+                onGetReposSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Repo>> call, Throwable t) {
+                if (!call.isCanceled())
+                    onGetReposError();
+            }
+        });
+    }
+
+    private void onGetReposSuccess(final ArrayList<Repo> repos) {
+        if (!repos.isEmpty()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    for (Repo repo : repos) {
+                        RealmRepo realmRepo = new RealmRepo(repo);
+                        realm.insertOrUpdate(realmRepo);
+                    }
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    stopRefreshing();
+                    //repoAdapter.notifyDataSetChanged();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    stopRefreshing();
+                }
+            });
+        }
+    }
+
+    private void onGetReposError() {
+        stopRefreshing();
+        Toast.makeText(this, R.string.error_occured_toast, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -63,6 +191,11 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (call != null) {
+            call.cancel();
+            call = null;
+        }
+        repos = null;
         realm.close();
     }
 
@@ -115,6 +248,12 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
     @Override
     public void onLoadingDialogCancel() {
+        if (call != null) call.cancel();
+        else call = null;
+    }
 
+    private void stopRefreshing() {
+        swipeRefreshLayout.setRefreshing(false);
+        isUpdating = false;
     }
 }

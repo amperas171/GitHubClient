@@ -15,6 +15,9 @@ import io.realm.Realm;
 
 
 public class SplashActivity extends AppCompatActivity {
+
+    public static final int DELAY = 2;
+
     private Realm realm;
 
     @Override
@@ -28,7 +31,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 checkUserAndOpenActivity();
             }
-        }, 2000);
+        }, DELAY);
     }
 
     private void checkUserAndOpenActivity() {

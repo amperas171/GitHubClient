@@ -9,4 +9,8 @@
     <string name="exit">Exit</string>
     <string name="exit_alert_message">All your data would be cleared! Are you sure you want to exit?</string>
     <string name="error_occured_toast">Error occurred. Try again please.</string>
+    <string name="private_string">private</string>
+    <string name="public_string">public</string>
+    <string name="no_repository_exists">No Repository exists</string>
+    <string name="no_description">No description</string>
 </resources>

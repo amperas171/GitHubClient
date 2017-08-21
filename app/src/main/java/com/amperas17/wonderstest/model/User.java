@@ -126,4 +126,17 @@ public class User implements Parcelable {
     public void setCompany(String company) {
         this.company = company;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "login='" + login + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", url='" + url + '\'' +
+                ", html_url='" + html_url + '\'' +
+                ", reposUrl='" + reposUrl + '\'' +
+                ", type='" + type + '\'' +
+                ", company='" + company + '\'' +
+                '}';
+    }
 }

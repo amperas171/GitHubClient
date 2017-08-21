@@ -114,7 +114,6 @@ public class AuthActivity extends AppCompatActivity
         super.onDestroy();
         if (call != null) {
             call.cancel();
-        } else {
             call = null;
         }
         realm.close();
