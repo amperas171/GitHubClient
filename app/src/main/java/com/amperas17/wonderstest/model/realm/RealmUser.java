@@ -16,6 +16,7 @@ public class RealmUser extends RealmObject {
     private String reposUrl;
     private String type;
     private String company;
+    private String authHeader;
 
 
     public RealmUser() {
@@ -29,10 +30,11 @@ public class RealmUser extends RealmObject {
         this.reposUrl = user.getReposUrl();
         this.type = user.getType();
         this.company = user.getCompany();
+        this.authHeader = user.getAuthHeader();
     }
 
     public User toUser() {
-        return new User(login, avatarUrl, url, html_url, reposUrl, type, company);
+        return new User(login, avatarUrl, url, html_url, reposUrl, type, company, authHeader);
     }
 
     public String getLogin() {
@@ -90,4 +92,13 @@ public class RealmUser extends RealmObject {
     public void setCompany(String company) {
         this.company = company;
     }
+
+    public String getAuthHeader() {
+        return authHeader;
+    }
+
+    public void setAuthHeader(String authHeader) {
+        this.authHeader = authHeader;
+    }
+
 }

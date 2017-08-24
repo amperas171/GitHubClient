@@ -13,4 +13,6 @@
     <string name="public_string">public</string>
     <string name="no_repository_exists">No Repository exists</string>
     <string name="no_description">No description</string>
+    <string name="no_labels">No labels</string>
+    <string name="no_issues_in_repository">No issues in repository</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.amperas17.wonderstest.api;
 
 
+import com.amperas17.wonderstest.model.Issue;
 import com.amperas17.wonderstest.model.Repo;
 import com.amperas17.wonderstest.model.User;
 
@@ -17,10 +18,10 @@ public interface GitHubApi {
     Call<User> getUser(@Header("Authorization") String authorization);
 
     @GET("users/{user}/repos")
-    Call<ArrayList<Repo>> getRepos(@Path("user") String userLogin);
+    Call<ArrayList<Repo>> getRepos(@Header("Authorization") String authorization, @Path("user") String userLogin);
 
-    @GET("users/{user}/repos{repo}/issues")
-    Call<Object> getIssues(
+    @GET("repos/{user}/{repo}/issues")
+    Call<ArrayList<Issue>> getIssues(
             @Path("user") String userLogin,
             @Path("repo") String repoName
     );

@@ -1,7 +1,6 @@
 package com.amperas17.wonderstest.model.realm;
 
 
-import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.model.Repo;
 
 import io.realm.RealmObject;

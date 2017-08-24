@@ -21,6 +21,7 @@ public class User implements Parcelable {
     private String type;
     @SerializedName("company")
     private String company;
+    private String authHeader;
 
 
     protected User(Parcel in) {
@@ -31,6 +32,7 @@ public class User implements Parcelable {
         reposUrl = in.readString();
         type = in.readString();
         company = in.readString();
+        authHeader = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -45,7 +47,7 @@ public class User implements Parcelable {
         }
     };
 
-    public User(String login, String avatarUrl, String url, String html_url, String reposUrl, String type, String company) {
+    public User(String login, String avatarUrl, String url, String html_url, String reposUrl, String type, String company, String authHeader) {
         this.login = login;
         this.avatarUrl = avatarUrl;
         this.url = url;
@@ -53,6 +55,7 @@ public class User implements Parcelable {
         this.reposUrl = reposUrl;
         this.type = type;
         this.company = company;
+        this.authHeader = authHeader;
     }
 
     @Override
@@ -69,6 +72,7 @@ public class User implements Parcelable {
         dest.writeString(reposUrl);
         dest.writeString(type);
         dest.writeString(company);
+        dest.writeString(authHeader);
     }
 
     public String getLogin() {
@@ -127,6 +131,14 @@ public class User implements Parcelable {
         this.company = company;
     }
 
+    public String getAuthHeader() {
+        return authHeader;
+    }
+
+    public void setAuthHeader(String authHeader) {
+        this.authHeader = authHeader;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -137,6 +149,7 @@ public class User implements Parcelable {
                 ", reposUrl='" + reposUrl + '\'' +
                 ", type='" + type + '\'' +
                 ", company='" + company + '\'' +
+                ", authHeader='" + authHeader + '\'' +
                 '}';
     }
 }

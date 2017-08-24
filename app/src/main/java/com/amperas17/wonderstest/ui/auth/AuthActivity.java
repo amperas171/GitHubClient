@@ -61,13 +61,13 @@ public class AuthActivity extends AppCompatActivity
     }
 
     public void auth(String login, String password) {
-        String authHeader = getAuthHeader(login, password);
+        final String authHeader = getAuthHeader(login, password);
         call = App.getGitHubApi().getUser(authHeader);
         LoadingDialog.show(getSupportFragmentManager());
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                onAuthSuccess(response.body());
+                onAuthSuccess(response.body(), authHeader);
             }
 
             @Override
@@ -77,10 +77,12 @@ public class AuthActivity extends AppCompatActivity
         });
     }
 
-    private void onAuthSuccess(User user) {
+    private void onAuthSuccess(User user, String authHeader) {
+        user.setAuthHeader(authHeader);
         saveUser(user);
         LoadingDialog.dismiss(getSupportFragmentManager());
         startActivity(UserInfoActivity.newIntent(this, user));
+        finish();
     }
 
     private void saveUser(User user) {

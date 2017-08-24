@@ -23,6 +23,7 @@ import com.amperas17.wonderstest.model.User;
 import com.amperas17.wonderstest.model.realm.RealmRepo;
 import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.LoadingDialog;
+import com.amperas17.wonderstest.ui.auth.AuthActivity;
 import com.amperas17.wonderstest.ui.issues.IssuesActivity;
 
 import java.util.ArrayList;
@@ -81,12 +82,19 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
         repos = realm.where(RealmRepo.class)
                 .equalTo(RealmRepo.OWNER_LOGIN, user.getLogin()).findAll();
+
+        if (repos.isEmpty()) {
+            tvNoData.setVisibility(View.VISIBLE);
+        }
+
         repos.addChangeListener(new RealmChangeListener<RealmResults<RealmRepo>>() {
             @Override
             public void onChange(RealmResults<RealmRepo> realmRepos) {
                 if (!realmRepos.isEmpty()) {
                     tvNoData.setVisibility(View.GONE);
                     repoAdapter.notifyDataSetChanged();
+                } else {
+                    tvNoData.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -98,11 +106,7 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
             }
         }, repos);
 
-        if (repos.isEmpty()) {
-            tvNoData.setVisibility(View.VISIBLE);
-        }
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewRepoList);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvRepoList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(repoAdapter);
 
@@ -125,7 +129,7 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
     private void getRepos() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        call = App.getGitHubApi().getRepos(user.getLogin());
+        call = App.getGitHubApi().getRepos(user.getAuthHeader(), user.getLogin());
         call.enqueue(new Callback<ArrayList<Repo>>() {
             @Override
             public void onResponse(Call<ArrayList<Repo>> call, Response<ArrayList<Repo>> response) {
@@ -141,7 +145,7 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
     }
 
     private void onGetReposSuccess(final ArrayList<Repo> repos) {
-        if (!repos.isEmpty()) {
+        if (repos != null && !repos.isEmpty()) {
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -154,7 +158,6 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
                 @Override
                 public void onSuccess() {
                     stopRefreshing();
-                    //repoAdapter.notifyDataSetChanged();
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
@@ -213,7 +216,6 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
         dialog.show();
     }
 
-
     private void exit() {
         LoadingDialog.show(getSupportFragmentManager());
         if (!realm.isClosed()) {
@@ -238,7 +240,8 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
     private void onDeleteDataSuccess() {
         LoadingDialog.dismiss(getSupportFragmentManager());
-        onBackPressed();
+        startActivity(new Intent(this, AuthActivity.class));
+        finish();
     }
 
     private void onDeleteDataError() {
