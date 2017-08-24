@@ -23,9 +23,17 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
     private RealmResults<RealmIssue> issues;
     private AdapterItemClickListener<Issue> listener;
 
-    IssueAdapter(AdapterItemClickListener<Issue> listener, RealmResults<RealmIssue> list) {
+    public IssueAdapter(AdapterItemClickListener<Issue> listener, RealmResults<RealmIssue> list) {
         this.issues = list;
         this.listener = listener;
+    }
+
+    public IssueAdapter(AdapterItemClickListener<Issue> listener) {
+        this.listener = listener;
+    }
+
+    public void setIssues(RealmResults<RealmIssue> issues) {
+        this.issues = issues;
     }
 
     @Override
@@ -37,12 +45,14 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.bind(issues.get(position), listener);
+        if (issues != null && !issues.isEmpty())
+            holder.bind(issues.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return issues.size();
+        if (issues != null) return issues.size();
+        else return 0;
     }
 
 
@@ -84,7 +94,7 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                     String colorStr = issueItem.getLabels().get(i).getColor();
                     if (colorStr.equals("ffffff")) {
                         textView.setTextColor(Color.BLACK);
-                    } else{
+                    } else {
                         textView.setTextColor(Color.WHITE);
                     }
                     view.setCardBackgroundColor(Color.parseColor('#' + colorStr));

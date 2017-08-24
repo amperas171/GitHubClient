@@ -12,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class RealmIssue extends RealmObject {
     public static final String REPO_NAME = "repoName";
+    public static final String TITLE = "title";
 
     private String title;
     @PrimaryKey

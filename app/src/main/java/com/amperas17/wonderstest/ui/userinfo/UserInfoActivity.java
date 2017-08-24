@@ -25,6 +25,7 @@ import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 import com.amperas17.wonderstest.ui.issues.IssuesActivity;
+import com.amperas17.wonderstest.ui.searchissues.SearchIssuesActivity;
 
 import java.util.ArrayList;
 
@@ -183,6 +184,9 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.search:
+                startActivity(new Intent(this, SearchIssuesActivity.class));
+                return true;
             case R.id.exit:
                 showExitDialog();
                 return true;

@@ -28,6 +28,8 @@
 
         <activity android:name=".ui.issues.IssuesActivity"/>
 
+        <activity android:name=".ui.searchissues.SearchIssuesActivity"/>
+
     </application>
 
 </manifest>
