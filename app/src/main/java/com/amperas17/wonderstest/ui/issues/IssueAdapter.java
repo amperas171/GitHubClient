@@ -10,9 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Issue;
+import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
-import com.amperas17.wonderstest.ui.AdapterItemClickListener;
+import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
+import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -21,14 +22,14 @@ import io.realm.RealmResults;
 public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> {
 
     private RealmResults<RealmIssue> issues;
-    private AdapterItemClickListener<Issue> listener;
+    private AdapterItemLongClickListener<Issue> listener;
 
-    public IssueAdapter(AdapterItemClickListener<Issue> listener, RealmResults<RealmIssue> list) {
+    public IssueAdapter(AdapterItemLongClickListener<Issue> listener, RealmResults<RealmIssue> list) {
         this.issues = list;
         this.listener = listener;
     }
 
-    public IssueAdapter(AdapterItemClickListener<Issue> listener) {
+    public IssueAdapter(AdapterItemLongClickListener<Issue> listener) {
         this.listener = listener;
     }
 
@@ -71,7 +72,7 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
             fl = (FlowLayout) itemView.findViewById(R.id.flLabelsContainer);
         }
 
-        private void bind(final RealmIssue issueItem, final AdapterItemClickListener<Issue> listener) {
+        private void bind(final RealmIssue issueItem, final AdapterItemLongClickListener<Issue> listener) {
 
             tvIssueTitle.setText(issueItem.getTitle());
 
@@ -101,13 +102,6 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                     fl.addView(view);
                 }
             }
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(issueItem.toIssue());
-                }
-            });
 
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

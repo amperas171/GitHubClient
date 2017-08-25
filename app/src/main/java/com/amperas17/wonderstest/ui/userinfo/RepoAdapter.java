@@ -9,18 +9,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Repo;
+import com.amperas17.wonderstest.model.pojo.Repo;
 import com.amperas17.wonderstest.model.realm.RealmRepo;
-import com.amperas17.wonderstest.ui.AdapterItemClickListener;
+import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 
 import io.realm.RealmResults;
 
 public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
 
     RealmResults<RealmRepo> repos;
-    private AdapterItemClickListener<Repo> listener;
+    private AdapterItemClicksListener<Repo> listener;
 
-    RepoAdapter(AdapterItemClickListener<Repo> listener, RealmResults<RealmRepo> list) {
+    RepoAdapter(AdapterItemClicksListener<Repo> listener, RealmResults<RealmRepo> list) {
         this.repos = list;
         this.listener = listener;
     }
@@ -58,7 +58,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
             rlRepoContainer = (RelativeLayout) itemView.findViewById(R.id.rlRepoContainer);
         }
 
-        private void bind(final RealmRepo repoItem, final AdapterItemClickListener<Repo> listener) {
+        private void bind(final RealmRepo repoItem, final AdapterItemClicksListener<Repo> listener) {
 
             tvRepoName.setText(repoItem.getName());
 

@@ -13,8 +13,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Issue;
-import com.amperas17.wonderstest.model.Repo;
+import com.amperas17.wonderstest.model.pojo.Issue;
+import com.amperas17.wonderstest.model.pojo.Repo;
 import com.amperas17.wonderstest.model.realm.RealmNote;
 
 import io.realm.Realm;

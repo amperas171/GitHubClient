@@ -1,6 +1,6 @@
 package com.amperas17.wonderstest.model.realm;
 
-import com.amperas17.wonderstest.model.Label;
+import com.amperas17.wonderstest.model.pojo.Label;
 
 import io.realm.RealmObject;
 

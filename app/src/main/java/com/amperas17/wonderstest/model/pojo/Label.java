@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.model;
+package com.amperas17.wonderstest.model.pojo;
 
 
 import android.os.Parcel;

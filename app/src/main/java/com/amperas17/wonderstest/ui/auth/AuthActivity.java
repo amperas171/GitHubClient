@@ -10,9 +10,9 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.User;
+import com.amperas17.wonderstest.model.pojo.User;
 import com.amperas17.wonderstest.model.realm.RealmUser;
-import com.amperas17.wonderstest.ui.LoadingDialog;
+import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.userinfo.UserInfoActivity;
 
 import io.realm.Realm;

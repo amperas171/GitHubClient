@@ -11,11 +11,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Issue;
+import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
-import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
+import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import io.realm.Case;
 import io.realm.Realm;
@@ -60,11 +60,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        issueAdapter = new IssueAdapter(new AdapterItemClickListener<Issue>() {
-            @Override
-            public void onItemClick(Issue issueItem) {
-            }
-
+        issueAdapter = new IssueAdapter(new AdapterItemLongClickListener<Issue>() {
             @Override
             public void onItemLongClick(Issue issueItem) {
                 startActivity(NoteActivity.newIntent(SearchIssuesActivity.this, issueItem));

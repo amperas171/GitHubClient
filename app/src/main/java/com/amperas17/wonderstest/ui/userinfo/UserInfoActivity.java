@@ -18,11 +18,11 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Repo;
-import com.amperas17.wonderstest.model.User;
+import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.model.pojo.User;
 import com.amperas17.wonderstest.model.realm.RealmRepo;
-import com.amperas17.wonderstest.ui.AdapterItemClickListener;
-import com.amperas17.wonderstest.ui.LoadingDialog;
+import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
+import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 import com.amperas17.wonderstest.ui.issues.IssuesActivity;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
@@ -102,7 +102,7 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
         });
 
-        repoAdapter = new RepoAdapter(new AdapterItemClickListener<Repo>() {
+        repoAdapter = new RepoAdapter(new AdapterItemClicksListener<Repo>() {
             @Override
             public void onItemClick(Repo repoItem) {
                 startActivity(IssuesActivity.newIntent(UserInfoActivity.this, repoItem));

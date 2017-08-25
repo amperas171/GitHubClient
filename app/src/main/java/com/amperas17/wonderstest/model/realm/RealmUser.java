@@ -1,7 +1,7 @@
 package com.amperas17.wonderstest.model.realm;
 
 
-import com.amperas17.wonderstest.model.User;
+import com.amperas17.wonderstest.model.pojo.User;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

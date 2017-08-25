@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.ui;
+package com.amperas17.wonderstest.ui.utils;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;

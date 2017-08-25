@@ -15,11 +15,11 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.Issue;
-import com.amperas17.wonderstest.model.Repo;
+import com.amperas17.wonderstest.model.pojo.Issue;
+import com.amperas17.wonderstest.model.pojo.Repo;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
-import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
+import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import java.util.ArrayList;
 
@@ -89,11 +89,7 @@ public class IssuesActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        issueAdapter = new IssueAdapter(new AdapterItemClickListener<Issue>() {
-            @Override
-            public void onItemClick(Issue issueItem) {
-            }
-
+        issueAdapter = new IssueAdapter(new AdapterItemLongClickListener<Issue>() {
             @Override
             public void onItemLongClick(Issue issueItem) {
                 startActivity(NoteActivity.newIntent(IssuesActivity.this, issueItem));
