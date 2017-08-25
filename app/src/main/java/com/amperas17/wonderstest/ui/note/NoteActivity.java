@@ -40,7 +40,7 @@ public class NoteActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        getSupportActionBar().setTitle(getString(R.string.note_to) + " " + getItemKey());
+        getSupportActionBar().setTitle(getString(R.string.note_to) + " " + getItemName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         etTitle = (EditText) findViewById(R.id.etTitle);
@@ -80,6 +80,13 @@ public class NoteActivity extends AppCompatActivity {
         Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
         if (item instanceof Repo) return ((Repo) item).getName();
         if (item instanceof Issue) return ((Issue) item).getId().toString();
+        return "";
+    }
+
+    private String getItemName() {
+        Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
+        if (item instanceof Repo) return ((Repo) item).getName();
+        if (item instanceof Issue) return ((Issue) item).getTitle();
         return "";
     }
 
