@@ -92,7 +92,7 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                     TextView textView = (TextView) view.findViewById(R.id.tvLabelName);
                     textView.setText(issueItem.getLabels().get(i).getName());
                     String colorStr = issueItem.getLabels().get(i).getColor();
-                    if (colorStr.equals("ffffff")) {
+                    if (colorStr.equals("ffffff") || colorStr.equals("cccccc") || colorStr.equals("e6e6e6")) {
                         textView.setTextColor(Color.BLACK);
                     } else {
                         textView.setTextColor(Color.WHITE);
@@ -106,6 +106,14 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     listener.onItemClick(issueItem.toIssue());
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    listener.onItemLongClick(issueItem.toIssue());
+                    return true;
                 }
             });
         }

@@ -25,6 +25,7 @@ import com.amperas17.wonderstest.ui.AdapterItemClickListener;
 import com.amperas17.wonderstest.ui.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 import com.amperas17.wonderstest.ui.issues.IssuesActivity;
+import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.searchissues.SearchIssuesActivity;
 
 import java.util.ArrayList;
@@ -98,12 +99,18 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
                     tvNoData.setVisibility(View.VISIBLE);
                 }
             }
+
         });
 
         repoAdapter = new RepoAdapter(new AdapterItemClickListener<Repo>() {
             @Override
             public void onItemClick(Repo repoItem) {
                 startActivity(IssuesActivity.newIntent(UserInfoActivity.this, repoItem));
+            }
+
+            @Override
+            public void onItemLongClick(Repo repoItem) {
+                startActivity(NoteActivity.newIntent(UserInfoActivity.this, repoItem));
             }
         }, repos);
 
@@ -171,7 +178,7 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
     private void onGetReposError() {
         stopRefreshing();
-        Toast.makeText(this, R.string.error_occured_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -244,13 +251,14 @@ public class UserInfoActivity extends AppCompatActivity implements LoadingDialog
 
     private void onDeleteDataSuccess() {
         LoadingDialog.dismiss(getSupportFragmentManager());
+        repoAdapter.notifyDataSetChanged();
         startActivity(new Intent(this, AuthActivity.class));
         finish();
     }
 
     private void onDeleteDataError() {
         LoadingDialog.dismiss(getSupportFragmentManager());
-        Toast.makeText(this, R.string.error_occured_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
     }
 
     @Override

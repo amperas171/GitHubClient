@@ -12,11 +12,9 @@
             android:id="@+id/rvRepoList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/cardview_dark_background"
+            android:background="@color/primary_light"
             android:padding="@dimen/recycler_padding"
-            android:scrollbars="vertical">
-
-        </android.support.v7.widget.RecyclerView>
+            android:scrollbars="vertical"/>
 
         <TextView
             android:id="@+id/tvNoData"

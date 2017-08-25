@@ -30,6 +30,8 @@
 
         <activity android:name=".ui.searchissues.SearchIssuesActivity"/>
 
+        <activity android:name=".ui.note.NoteActivity"/>
+
     </application>
 
 </manifest>

@@ -10,4 +10,6 @@
     <dimen name="chips_padding_side">12dp</dimen>
     <dimen name="text_size_big">20sp</dimen>
     <dimen name="recycler_padding">4dp</dimen>
+    <dimen name="text_size_title">18sp</dimen>
+    <dimen name="text_size_description">16sp</dimen>
 </resources>

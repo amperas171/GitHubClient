@@ -19,6 +19,7 @@ import com.amperas17.wonderstest.model.Issue;
 import com.amperas17.wonderstest.model.Repo;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.AdapterItemClickListener;
+import com.amperas17.wonderstest.ui.note.NoteActivity;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,6 @@ public class IssuesActivity extends AppCompatActivity {
 
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private Repo repo;
     private Call<ArrayList<Issue>> call;
     private Realm realm;
     private RecyclerView recyclerView;
@@ -59,8 +59,7 @@ public class IssuesActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        repo = getIntent().getParcelableExtra(REPO_ARG);
-        getSupportActionBar().setTitle(repo.getName());
+        getSupportActionBar().setTitle(getRepoArg().getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         tvNoData = (TextView) findViewById(R.id.tvNoData);
@@ -93,6 +92,11 @@ public class IssuesActivity extends AppCompatActivity {
         issueAdapter = new IssueAdapter(new AdapterItemClickListener<Issue>() {
             @Override
             public void onItemClick(Issue issueItem) {
+            }
+
+            @Override
+            public void onItemLongClick(Issue issueItem) {
+                startActivity(NoteActivity.newIntent(IssuesActivity.this, issueItem));
             }
         });
 
@@ -135,7 +139,9 @@ public class IssuesActivity extends AppCompatActivity {
 
 
     private void getIssues() {
-        call = App.getGitHubApi().getIssues(repo.getOwner().getLogin(), repo.getName());
+        swipeRefreshLayout.setRefreshing(true);
+        isUpdating = true;
+        call = App.getGitHubApi().getIssues(getRepoArg().getOwner().getLogin(), getRepoArg().getName());
         call.enqueue(new Callback<ArrayList<Issue>>() {
             @Override
             public void onResponse(Call<ArrayList<Issue>> call, Response<ArrayList<Issue>> response) {
@@ -157,7 +163,7 @@ public class IssuesActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     for (Issue issue : issues) {
                         RealmIssue realmIssue = new RealmIssue(issue);
-                        realmIssue.setRepoName(repo.getName());
+                        realmIssue.setRepoName(getRepoArg().getName());
                         realm.insertOrUpdate(realmIssue);
                     }
                 }
@@ -180,7 +186,7 @@ public class IssuesActivity extends AppCompatActivity {
 
     private void onGetIssuesError() {
         stopRefreshing();
-        Toast.makeText(this, R.string.error_occured_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
     }
 
     private void stopRefreshing() {
@@ -212,8 +218,12 @@ public class IssuesActivity extends AppCompatActivity {
 
     private RealmResults<RealmIssue> getRepoIssues() {
         return realm.where(RealmIssue.class)
-                .equalTo(RealmIssue.REPO_NAME, repo.getName())
+                .equalTo(RealmIssue.REPO_NAME, getRepoArg().getName())
                 .findAll();
 
+    }
+
+    private Repo getRepoArg(){
+        return getIntent().getParcelableExtra(REPO_ARG);
     }
 }

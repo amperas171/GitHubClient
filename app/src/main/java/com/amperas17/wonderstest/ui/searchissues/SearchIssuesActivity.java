@@ -63,6 +63,11 @@ public class SearchIssuesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Issue issueItem) {
             }
+
+            @Override
+            public void onItemLongClick(Issue item) {
+
+            }
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);

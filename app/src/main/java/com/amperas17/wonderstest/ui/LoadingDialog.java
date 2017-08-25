@@ -8,6 +8,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.amperas17.wonderstest.R;
+
 
 public class LoadingDialog extends DialogFragment {
     private static final String TAG = "progress";
@@ -24,7 +26,7 @@ public class LoadingDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ProgressDialog dialog = new ProgressDialog(getActivity());
+        ProgressDialog dialog = new ProgressDialog(getActivity(),R.style.ProgressDialogCustom);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setMessage("Loading...");
         return dialog;
