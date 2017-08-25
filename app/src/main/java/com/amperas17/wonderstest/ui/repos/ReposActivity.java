@@ -239,6 +239,8 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
                 tvNoData.setVisibility(View.GONE);
             }
             repoAdapter.setRepos(repos);
+            repoAdapter.notifyDataSetChanged();
+
             repos.addChangeListener(new RealmChangeListener<RealmResults<RealmRepo>>() {
                 @Override
                 public void onChange(RealmResults<RealmRepo> realmRepos) {

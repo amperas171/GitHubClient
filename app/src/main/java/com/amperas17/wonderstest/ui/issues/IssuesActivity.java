@@ -70,13 +70,15 @@ public class IssuesActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
-            if (isUpdating) { getIssues(); }
+            if (isUpdating) {
+                getIssues();
+            }
         } else {
             getIssues();
         }
     }
 
-    private void initSwipe(){
+    private void initSwipe() {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -190,10 +192,14 @@ public class IssuesActivity extends AppCompatActivity {
     }
 
     private void setDataToAdapter(RealmResults<RealmIssue> issues) {
-        if (issues == null || issues.isEmpty()) {
+        if (issues == null) {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
-            tvNoData.setVisibility(View.GONE);
+            if (issues.isEmpty()) {
+                tvNoData.setVisibility(View.VISIBLE);
+            } else {
+                tvNoData.setVisibility(View.GONE);
+            }
             issueAdapter.setIssues(issues);
             issueAdapter.notifyDataSetChanged();
 
@@ -208,6 +214,7 @@ public class IssuesActivity extends AppCompatActivity {
                     }
                 }
             });
+
         }
     }
 
@@ -218,7 +225,7 @@ public class IssuesActivity extends AppCompatActivity {
 
     }
 
-    private Repo getRepoArg(){
+    private Repo getRepoArg() {
         return getIntent().getParcelableExtra(REPO_ARG);
     }
 }
