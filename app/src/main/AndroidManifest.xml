@@ -15,7 +15,7 @@
 
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,7 +24,7 @@
 
         <activity android:name=".ui.auth.AuthActivity"/>
 
-        <activity android:name=".ui.userinfo.UserInfoActivity"/>
+        <activity android:name=".ui.repos.ReposActivity"/>
 
         <activity android:name=".ui.issues.IssuesActivity"/>
 

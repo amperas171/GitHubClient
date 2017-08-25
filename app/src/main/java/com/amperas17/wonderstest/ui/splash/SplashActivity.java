@@ -6,25 +6,23 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.realm.RealmUser;
+import com.amperas17.wonderstest.data.repository.UserRepository;
 import com.amperas17.wonderstest.model.pojo.User;
-import com.amperas17.wonderstest.ui.userinfo.UserInfoActivity;
+import com.amperas17.wonderstest.ui.repos.ReposActivity;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 
-import io.realm.Realm;
 
+public class SplashActivity extends AppCompatActivity implements UserRepository.IGetUser {
 
-public class SplashActivity extends AppCompatActivity {
+    public static final int DELAY = 2000;
 
-    public static final int DELAY = 2;
-
-    private Realm realm;
+    private UserRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        realm = Realm.getDefaultInstance();
+        repository = new UserRepository(this);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -35,15 +33,13 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void checkUserAndOpenActivity() {
-        if (!realm.isClosed())
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmUser realmUser = realm.where(RealmUser.class).findFirst();
-                    if (realmUser != null) openUserInfoActivity(realmUser.toUser());
-                    else openAuthActivity();
-                }
-            });
+        repository.getUser();
+    }
+
+    @Override
+    public void onGetUser(User user) {
+        if (user != null) openUserInfoActivity(user);
+        else openAuthActivity();
     }
 
     private void openAuthActivity() {
@@ -52,13 +48,13 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void openUserInfoActivity(User user) {
-        startActivity(UserInfoActivity.newIntent(SplashActivity.this, user));
+        startActivity(ReposActivity.newIntent(SplashActivity.this, user));
         SplashActivity.this.finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close();
+        repository.close();
     }
 }

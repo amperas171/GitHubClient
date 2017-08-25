@@ -38,7 +38,6 @@ public class IssuesActivity extends AppCompatActivity {
 
     private Call<ArrayList<Issue>> call;
     private Realm realm;
-    private RecyclerView recyclerView;
     private IssueAdapter issueAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -67,7 +66,7 @@ public class IssuesActivity extends AppCompatActivity {
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(getRepoIssues());
+        setDataToAdapter(getRealmIssues());
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -96,7 +95,7 @@ public class IssuesActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(issueAdapter);
     }
@@ -212,7 +211,7 @@ public class IssuesActivity extends AppCompatActivity {
         }
     }
 
-    private RealmResults<RealmIssue> getRepoIssues() {
+    private RealmResults<RealmIssue> getRealmIssues() {
         return realm.where(RealmIssue.class)
                 .equalTo(RealmIssue.REPO_NAME, getRepoArg().getName())
                 .findAll();

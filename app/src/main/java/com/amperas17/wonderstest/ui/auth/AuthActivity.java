@@ -8,40 +8,37 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
+import com.amperas17.wonderstest.data.provider.AuthProvider;
+import com.amperas17.wonderstest.data.repository.UserRepository;
 import com.amperas17.wonderstest.model.pojo.User;
 import com.amperas17.wonderstest.model.realm.RealmUser;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
-import com.amperas17.wonderstest.ui.userinfo.UserInfoActivity;
-
-import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.amperas17.wonderstest.ui.repos.ReposActivity;
 
 public class AuthActivity extends AppCompatActivity
-        implements LoadingDialog.ILoadingDialog {
+        implements LoadingDialog.ILoadingDialog, AuthProvider.IAuthCaller {
 
-    EditText etLogin;
-    EditText etPassword;
-    Button btnNext;
+    private EditText etLogin;
+    private EditText etPassword;
+    private Button btnNext;
 
-    Realm realm;
-    Call<User> call;
+    private UserRepository repository;
+    private AuthProvider provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        etLogin = (EditText) findViewById(R.id.etLogin);
-        etPassword = (EditText) findViewById(R.id.etPassword);
-        btnNext = (Button) findViewById(R.id.btnNext);
+
+        repository = new UserRepository();
+        provider = new AuthProvider(this);
 
         getSupportActionBar().setTitle(R.string.auth_title);
 
-        realm = Realm.getDefaultInstance();
-
+        etLogin = (EditText) findViewById(R.id.etLogin);
+        etPassword = (EditText) findViewById(R.id.etPassword);
+        btnNext = (Button) findViewById(R.id.btnNext);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,39 +58,32 @@ public class AuthActivity extends AppCompatActivity
     }
 
     public void auth(String login, String password) {
-        final String authHeader = getAuthHeader(login, password);
-        call = App.getGitHubApi().getUser(authHeader);
+        String authHeader = getAuthHeader(login, password);
+        provider.getData(authHeader);
         LoadingDialog.show(getSupportFragmentManager());
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                onAuthSuccess(response.body(), authHeader);
-            }
+    }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable th) {
-                onAuthError(th);
-            }
-        });
+    @Override
+    public void onGetAuth(User user, String authHeader) {
+        onAuthSuccess(user, authHeader);
+    }
+
+    @Override
+    public void onError(Throwable th) {
+        onAuthError(th);
     }
 
     private void onAuthSuccess(User user, String authHeader) {
         user.setAuthHeader(authHeader);
         saveUser(user);
         LoadingDialog.dismiss(getSupportFragmentManager());
-        startActivity(UserInfoActivity.newIntent(this, user));
+        startActivity(ReposActivity.newIntent(this, user));
         finish();
     }
 
     private void saveUser(User user) {
         final RealmUser realmUser = new RealmUser(user);
-        if (!realm.isClosed())
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.insertOrUpdate(realmUser);
-                }
-            });
+        repository.setUser(realmUser);
     }
 
     private void onAuthError(Throwable th) {
@@ -107,17 +97,13 @@ public class AuthActivity extends AppCompatActivity
 
     @Override
     public void onLoadingDialogCancel() {
-        if (call != null)
-            call.cancel();
+        provider.cancel();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (call != null) {
-            call.cancel();
-            call = null;
-        }
-        realm.close();
+        provider.cancel();
+        repository.close();
     }
 }

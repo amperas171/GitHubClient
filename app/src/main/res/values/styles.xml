@@ -4,7 +4,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
 
     <style name="ProgressDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -13,5 +12,11 @@
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textSize">@dimen/text_size_big</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>

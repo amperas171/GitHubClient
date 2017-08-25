@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.ui.userinfo;
+package com.amperas17.wonderstest.ui.repos;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +25,14 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
         this.listener = listener;
     }
 
+    RepoAdapter(AdapterItemClicksListener<Repo> listener) {
+        this.listener = listener;
+    }
+
+    public void setRepos(RealmResults<RealmRepo> repos) {
+        this.repos = repos;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
@@ -34,12 +42,14 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.bind(repos.get(position), listener);
+        if (repos != null && !repos.isEmpty())
+            holder.bind(repos.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return repos.size();
+        if (repos != null) return repos.size();
+        else return 0;
     }
 
 
