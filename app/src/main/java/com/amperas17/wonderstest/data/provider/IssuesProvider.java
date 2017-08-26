@@ -20,7 +20,7 @@ public class IssuesProvider {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
-    public void getData(String login, String repoName){
+    public void getData(String login, String repoName) {
         call = App.getGitHubApi().getIssues(login, repoName);
         call.enqueue(new Callback<ArrayList<Issue>>() {
             @Override
@@ -39,15 +39,16 @@ public class IssuesProvider {
         });
     }
 
-    public void cancel(){
+    public void cancel() {
         if (call != null) {
             call.cancel();
             call = null;
         }
     }
 
-    public interface IIssuesCaller{
+    public interface IIssuesCaller {
         void onGetIssues(ArrayList<Issue> issues);
+
         void onError(Throwable th);
     }
 }

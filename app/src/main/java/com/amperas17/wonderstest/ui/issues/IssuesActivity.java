@@ -65,7 +65,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(repository.getIssues(getRepoArg().getName()));
+        setDataToAdapter(repository.getIssuesByRepoName(getRepoArg().getName()));
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -189,7 +189,6 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
                     }
                 }
             });
-
         }
     }
 

@@ -35,7 +35,7 @@ public class ReposRepository {
 
     public void setRepos(final ArrayList<Repo> repos) {
         if (!realm.isClosed())
-            realm.executeTransaction(new Realm.Transaction() {
+            realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     for (Repo repo : repos) {

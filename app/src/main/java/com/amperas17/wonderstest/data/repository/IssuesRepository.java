@@ -6,6 +6,7 @@ import com.amperas17.wonderstest.model.realm.RealmIssue;
 
 import java.util.ArrayList;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -17,11 +18,20 @@ public class IssuesRepository {
         realm = Realm.getDefaultInstance();
     }
 
-    public RealmResults<RealmIssue> getIssues(final String repoName) {
+    public RealmResults<RealmIssue> getIssuesByRepoName(final String repoName) {
         return realm.where(RealmIssue.class)
                 .equalTo(RealmIssue.REPO_NAME, repoName)
                 .findAll();
+    }
 
+    public RealmResults<RealmIssue> getAllIssues() {
+        return realm.where(RealmIssue.class).findAll();
+    }
+
+    public RealmResults<RealmIssue> getSearchedIssues(String pattern) {
+        return realm.where(RealmIssue.class)
+                .contains(RealmIssue.TITLE, pattern, Case.INSENSITIVE)
+                .findAllSorted(RealmIssue.TITLE);
     }
 
     public void setIssues(final ArrayList<Issue> issues, final String repoName) {

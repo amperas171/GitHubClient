@@ -11,14 +11,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
+import com.amperas17.wonderstest.data.repository.IssuesRepository;
 import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
-import io.realm.Case;
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class SearchIssuesActivity extends AppCompatActivity {
@@ -26,8 +25,9 @@ public class SearchIssuesActivity extends AppCompatActivity {
     public static final String SEARCH_QUERY = "query";
     public static final String IS_SEARCHING_TAG = "isSearching";
 
-    private Realm realm;
+    private IssuesRepository repository;
     private RecyclerView recyclerView;
+
     private IssueAdapter issueAdapter;
 
     private TextView tvNoData;
@@ -41,7 +41,8 @@ public class SearchIssuesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_issues);
 
-        realm = Realm.getDefaultInstance();
+        repository = new IssuesRepository();
+
         getSupportActionBar().setTitle(getString(R.string.search));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -49,7 +50,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
 
         initRecyclerView();
 
-        setDataToAdapter(getAllIssues());
+        setDataToAdapter(repository.getAllIssues());
 
         if (savedInstanceState != null) {
             isSearching = savedInstanceState.getBoolean(IS_SEARCHING_TAG, false);
@@ -110,9 +111,9 @@ public class SearchIssuesActivity extends AppCompatActivity {
     private void onQueryTextChanged(String pattern) {
         query = pattern;
         if (!pattern.isEmpty()) {
-            setDataToAdapter(getSearchedIssues(pattern));
+            setDataToAdapter(repository.getSearchedIssues(pattern));
         } else {
-            setDataToAdapter(getAllIssues());
+            setDataToAdapter(repository.getAllIssues());
         }
     }
 
@@ -128,9 +129,17 @@ public class SearchIssuesActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+            setDataToAdapter(repository.getAllIssues());
+        } else super.onBackPressed();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close();
+        repository.close();
     }
 
 
@@ -139,19 +148,9 @@ public class SearchIssuesActivity extends AppCompatActivity {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
             tvNoData.setVisibility(View.GONE);
-            issueAdapter.setIssues(issues);
-            issueAdapter.notifyDataSetChanged();
         }
-    }
-
-    private RealmResults<RealmIssue> getAllIssues() {
-        return realm.where(RealmIssue.class).findAll();
-    }
-
-    private RealmResults<RealmIssue> getSearchedIssues(String pattern) {
-        return realm.where(RealmIssue.class)
-                .contains(RealmIssue.TITLE, pattern, Case.INSENSITIVE)
-                .findAllSorted(RealmIssue.TITLE);
+        issueAdapter.setIssues(issues);
+        issueAdapter.notifyDataSetChanged();
     }
 
 }
