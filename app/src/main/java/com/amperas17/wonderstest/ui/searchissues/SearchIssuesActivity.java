@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.repository.IssuesRepository;
+import com.amperas17.wonderstest.data.cache.IssuesCache;
 import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
@@ -26,7 +26,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
     public static final String SEARCH_QUERY = "query";
     public static final String IS_SEARCHING_TAG = "isSearching";
 
-    private IssuesRepository repository;
+    private IssuesCache issuesCache;
 
     private IssueAdapter issueAdapter;
 
@@ -41,7 +41,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_issues);
 
-        repository = new IssuesRepository();
+        issuesCache = new IssuesCache();
 
         initActionBar();
 
@@ -49,7 +49,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
 
         initRecyclerView();
 
-        setDataToAdapter(repository.getAllIssues());
+        setDataToAdapter(issuesCache.getAllIssues());
 
         if (savedInstanceState != null) {
             isSearching = savedInstanceState.getBoolean(IS_SEARCHING_TAG, false);
@@ -118,9 +118,9 @@ public class SearchIssuesActivity extends AppCompatActivity {
     private void onQueryTextChanged(String pattern) {
         query = pattern;
         if (!pattern.isEmpty()) {
-            setDataToAdapter(repository.getSearchedIssues(pattern));
+            setDataToAdapter(issuesCache.getSearchedIssues(pattern));
         } else {
-            setDataToAdapter(repository.getAllIssues());
+            setDataToAdapter(issuesCache.getAllIssues());
         }
     }
 
@@ -140,14 +140,14 @@ public class SearchIssuesActivity extends AppCompatActivity {
         if (!searchView.isIconified()) {
             searchView.setQuery("", false);
             searchView.setIconified(true);
-            setDataToAdapter(repository.getAllIssues());
+            setDataToAdapter(issuesCache.getAllIssues());
         } else super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        repository.close();
+        issuesCache.close();
     }
 
 

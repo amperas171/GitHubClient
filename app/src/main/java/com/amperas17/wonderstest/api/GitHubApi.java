@@ -2,7 +2,7 @@ package com.amperas17.wonderstest.api;
 
 
 import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.model.pojo.Repository;
 import com.amperas17.wonderstest.model.pojo.User;
 
 import java.util.ArrayList;
@@ -18,11 +18,11 @@ public interface GitHubApi {
     Call<User> getUser(@Header("Authorization") String authorization);
 
     @GET("users/{user}/repos")
-    Call<ArrayList<Repo>> getRepos(@Header("Authorization") String authorization, @Path("user") String userLogin);
+    Call<ArrayList<Repository>> getRepositories(@Header("Authorization") String authorization, @Path("user") String userLogin);
 
-    @GET("repos/{user}/{repo}/issues")
+    @GET("repos/{user}/{repository}/issues")
     Call<ArrayList<Issue>> getIssues(
             @Path("user") String userLogin,
-            @Path("repo") String repoName
+            @Path("repository") String repositoryName
     );
 }

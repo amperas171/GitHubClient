@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
-import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -72,15 +71,15 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
             fl = (FlowLayout) itemView.findViewById(R.id.flLabelsContainer);
         }
 
-        private void bind(final RealmIssue issueItem, final AdapterItemLongClickListener<Issue> listener) {
+        private void bind(final RealmIssue item, final AdapterItemLongClickListener<Issue> listener) {
 
-            tvIssueTitle.setText(issueItem.getTitle());
+            tvIssueTitle.setText(item.getTitle());
 
-            if (issueItem.getBody() != null && !issueItem.getBody().isEmpty())
-                tvBody.setText(issueItem.getBody());
+            if (item.getBody() != null && !item.getBody().isEmpty())
+                tvBody.setText(item.getBody());
             else tvBody.setText(itemView.getContext().getString(R.string.no_description));
 
-            if (issueItem.getLabels().isEmpty()) {
+            if (item.getLabels().isEmpty()) {
                 tvNoLabels.setVisibility(View.VISIBLE);
                 fl.removeAllViews();
             } else {
@@ -88,11 +87,11 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                 LayoutInflater li = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                 fl.removeAllViews();
-                for (int i = 0; i < issueItem.getLabels().size(); i++) {
+                for (int i = 0; i < item.getLabels().size(); i++) {
                     CardView view = (CardView) li.inflate(R.layout.item_label, fl, false);
                     TextView textView = (TextView) view.findViewById(R.id.tvLabelName);
-                    textView.setText(issueItem.getLabels().get(i).getName());
-                    String colorStr = issueItem.getLabels().get(i).getColor();
+                    textView.setText(item.getLabels().get(i).getName());
+                    String colorStr = item.getLabels().get(i).getColor();
                     if (colorStr.equals("ffffff") || colorStr.equals("cccccc") || colorStr.equals("e6e6e6")) {
                         textView.setTextColor(Color.BLACK);
                     } else {
@@ -106,7 +105,7 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    listener.onItemLongClick(issueItem.toIssue());
+                    listener.onItemLongClick(item.toIssue());
                     return true;
                 }
             });

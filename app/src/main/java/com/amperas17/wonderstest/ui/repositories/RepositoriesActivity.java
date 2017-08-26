@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.ui.repos;
+package com.amperas17.wonderstest.ui.repositories;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,12 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.provider.ReposProvider;
-import com.amperas17.wonderstest.data.repository.ReposRepository;
-import com.amperas17.wonderstest.data.repository.ErasingRepository;
-import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.data.provider.RepositoriesProvider;
+import com.amperas17.wonderstest.data.cache.RepositoryCache;
+import com.amperas17.wonderstest.data.cache.CacheEraser;
+import com.amperas17.wonderstest.model.pojo.Repository;
 import com.amperas17.wonderstest.model.pojo.User;
-import com.amperas17.wonderstest.model.realm.RealmRepo;
+import com.amperas17.wonderstest.model.realm.RealmRepository;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
@@ -37,16 +37,16 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class ReposActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
-        ReposProvider.IReposCaller, ErasingRepository.IEraseCaller {
+public class RepositoriesActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
+        RepositoriesProvider.IRepositoriesCaller, CacheEraser.IEraseCaller {
 
     public static final String USER_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private ReposRepository reposRepository;
-    private ErasingRepository erasingRepository;
-    private ReposProvider provider;
-    private RepoAdapter repoAdapter;
+    private RepositoryCache repositoryCache;
+    private CacheEraser cacheEraser;
+    private RepositoriesProvider repositoriesProvider;
+    private RepositoryAdapter repositoryAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvNoData;
@@ -54,7 +54,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
     private boolean isUpdating = false;
 
     public static Intent newIntent(Context context, User user) {
-        Intent intent = new Intent(context, ReposActivity.class);
+        Intent intent = new Intent(context, RepositoriesActivity.class);
         intent.putExtra(USER_ARG, user);
         return intent;
     }
@@ -64,9 +64,9 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        reposRepository = new ReposRepository();
-        erasingRepository = new ErasingRepository(this);
-        provider = new ReposProvider(this);
+        repositoryCache = new RepositoryCache();
+        cacheEraser = new CacheEraser(this);
+        repositoriesProvider = new RepositoriesProvider(this);
 
         initActionBar();
 
@@ -75,15 +75,15 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(reposRepository.getRepos(getUserArg().getLogin()));
+        setDataToAdapter(repositoryCache.getRepositories(getUserArg().getLogin()));
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
             if (isUpdating) {
-                getRepos();
+                getRepositories();
             }
         } else {
-            getRepos();
+            getRepositories();
         }
     }
 
@@ -100,27 +100,27 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getRepos();
+                getRepositories();
             }
         });
     }
 
     private void initRecyclerView() {
-        repoAdapter = new RepoAdapter(new AdapterItemClicksListener<Repo>() {
+        repositoryAdapter = new RepositoryAdapter(new AdapterItemClicksListener<Repository>() {
             @Override
-            public void onItemClick(Repo repoItem) {
-                startActivity(IssuesActivity.newIntent(ReposActivity.this, repoItem));
+            public void onItemClick(Repository repositoryItem) {
+                startActivity(IssuesActivity.newIntent(RepositoriesActivity.this, repositoryItem));
             }
 
             @Override
-            public void onItemLongClick(Repo repoItem) {
-                startActivity(NoteActivity.newIntent(ReposActivity.this, repoItem));
+            public void onItemLongClick(Repository repositoryItem) {
+                startActivity(NoteActivity.newIntent(RepositoriesActivity.this, repositoryItem));
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvRepoList);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvRepositoryList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(repoAdapter);
+        recyclerView.setAdapter(repositoryAdapter);
     }
 
     @Override
@@ -129,30 +129,30 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         outState.putBoolean(IS_UPDATING_TAG, isUpdating);
     }
 
-    private void getRepos() {
+    private void getRepositories() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        provider.getData(getUserArg().getAuthHeader(), getUserArg().getLogin());
+        repositoriesProvider.getData(getUserArg().getAuthHeader(), getUserArg().getLogin());
     }
 
     @Override
-    public void onGetRepos(ArrayList<Repo> repos) {
-        onGetReposSuccess(repos);
+    public void onGetRepositories(ArrayList<Repository> repositories) {
+        doOnGetRepositories(repositories);
     }
 
     @Override
-    public void onError(Throwable th) {
-        onGetReposError(th);
+    public void onGetRepositoriesError(Throwable th) {
+        doOnGetRepositoriesError(th);
     }
 
-    private void onGetReposSuccess(final ArrayList<Repo> repos) {
+    private void doOnGetRepositories(final ArrayList<Repository> repositories) {
         stopRefreshing();
-        if (repos != null && !repos.isEmpty()) {
-            reposRepository.setRepos(repos);
+        if (repositories != null && !repositories.isEmpty()) {
+            repositoryCache.setRepositories(repositories);
         }
     }
 
-    private void onGetReposError(Throwable th) {
+    private void doOnGetRepositoriesError(Throwable th) {
         stopRefreshing();
         Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
@@ -181,9 +181,9 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        provider.cancel();
-        reposRepository.close();
-        erasingRepository.close();
+        repositoriesProvider.cancel();
+        repositoryCache.close();
+        cacheEraser.close();
     }
 
     private void showExitDialog() {
@@ -202,7 +202,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
 
     private void exit() {
         LoadingDialog.show(getSupportFragmentManager());
-        erasingRepository.erase();
+        cacheEraser.erase();
     }
 
     @Override
@@ -217,7 +217,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
 
     private void onDeleteDataSuccess() {
         LoadingDialog.dismiss(getSupportFragmentManager());
-        repoAdapter.notifyDataSetChanged();
+        repositoryAdapter.notifyDataSetChanged();
         startActivity(new Intent(this, AuthActivity.class));
         finish();
     }
@@ -229,7 +229,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
 
     @Override
     public void onLoadingDialogCancel() {
-        provider.cancel();
+        repositoriesProvider.cancel();
     }
 
     private void stopRefreshing() {
@@ -237,24 +237,24 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         isUpdating = false;
     }
 
-    private void setDataToAdapter(RealmResults<RealmRepo> repos) {
-        if (repos == null) {
+    private void setDataToAdapter(RealmResults<RealmRepository> repositories) {
+        if (repositories == null) {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
-            if (repos.isEmpty()) {
+            if (repositories.isEmpty()) {
                 tvNoData.setVisibility(View.VISIBLE);
             } else {
                 tvNoData.setVisibility(View.GONE);
             }
-            repoAdapter.setRepos(repos);
-            repoAdapter.notifyDataSetChanged();
+            repositoryAdapter.setRepositories(repositories);
+            repositoryAdapter.notifyDataSetChanged();
 
-            repos.addChangeListener(new RealmChangeListener<RealmResults<RealmRepo>>() {
+            repositories.addChangeListener(new RealmChangeListener<RealmResults<RealmRepository>>() {
                 @Override
-                public void onChange(RealmResults<RealmRepo> realmRepos) {
-                    if (!realmRepos.isEmpty()) {
+                public void onChange(RealmResults<RealmRepository> realmRepositories) {
+                    if (!realmRepositories.isEmpty()) {
                         tvNoData.setVisibility(View.GONE);
-                        repoAdapter.notifyDataSetChanged();
+                        repositoryAdapter.notifyDataSetChanged();
                     } else {
                         tvNoData.setVisibility(View.VISIBLE);
                     }

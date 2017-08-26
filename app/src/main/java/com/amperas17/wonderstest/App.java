@@ -35,17 +35,16 @@ public class App extends Application {
     }
 
     private void configureRetrofit() {
-        //Logging
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(logging).build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/") //Base address part
+                .baseUrl("https://api.github.com/")
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create()) //transform json into objects
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        gitHubApi = retrofit.create(GitHubApi.class); //gitHubApi object that makes responses
+        gitHubApi = retrofit.create(GitHubApi.class);
     }
 }

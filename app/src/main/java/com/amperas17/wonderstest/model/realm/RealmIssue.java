@@ -11,14 +11,14 @@ import io.realm.annotations.PrimaryKey;
 
 
 public class RealmIssue extends RealmObject {
-    public static final String REPO_NAME = "repoName";
+    public static final String REPOSITORY_NAME = "repositoryName";
     public static final String TITLE = "title";
 
     private String title;
     @PrimaryKey
     private Long id;
     private String html_url;
-    private String repoName;
+    private String repositoryName;
     private RealmUser user;
     private RealmList<RealmLabel> labels;
     private String state;
@@ -28,7 +28,7 @@ public class RealmIssue extends RealmObject {
         this.title = issue.getTitle();
         this.id = issue.getId();
         this.html_url = issue.getHtml_url();
-        this.repoName = issue.getRepoName();
+        this.repositoryName = issue.getRepositoryName();
         this.user = new RealmUser(issue.getUser());
         this.state = issue.getState();
         this.body = issue.getBody();
@@ -39,7 +39,7 @@ public class RealmIssue extends RealmObject {
     }
 
     public Issue toIssue() {
-        return new Issue(title, id, html_url, repoName, user.toUser(), getPlainLabels(), state, body);
+        return new Issue(title, id, html_url, repositoryName, user.toUser(), getPlainLabels(), state, body);
     }
 
     public RealmList<RealmLabel> getRealmLabels(ArrayList<Label> plainLabels){
@@ -83,12 +83,12 @@ public class RealmIssue extends RealmObject {
         this.html_url = html_url;
     }
 
-    public String getRepoName() {
-        return repoName;
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     public RealmUser getUser() {

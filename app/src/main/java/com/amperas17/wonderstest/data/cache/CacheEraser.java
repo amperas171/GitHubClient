@@ -1,19 +1,19 @@
-package com.amperas17.wonderstest.data.repository;
+package com.amperas17.wonderstest.data.cache;
 
 
 import java.lang.ref.WeakReference;
 
 import io.realm.Realm;
 
-public class ErasingRepository {
+public class CacheEraser {
     private Realm realm;
     private WeakReference<IEraseCaller> callerRef;
 
-    public ErasingRepository() {
+    public CacheEraser() {
         realm = Realm.getDefaultInstance();
     }
 
-    public ErasingRepository(IEraseCaller caller) {
+    public CacheEraser(IEraseCaller caller) {
         this.callerRef = new WeakReference<>(caller);
         realm = Realm.getDefaultInstance();
     }

@@ -16,7 +16,7 @@ public class Issue implements Parcelable {
     private Long id;
     @SerializedName("html_url")
     private String html_url;
-    private String repoName;
+    private String repositoryName;
     @SerializedName("user")
     private User user;
     @SerializedName("labels")
@@ -27,11 +27,11 @@ public class Issue implements Parcelable {
     private String body;
 
 
-    public Issue(String title, Long id, String html_url, String repoName, User user, ArrayList<Label> labels, String state, String body) {
+    public Issue(String title, Long id, String html_url, String repositoryName, User user, ArrayList<Label> labels, String state, String body) {
         this.title = title;
         this.id = id;
         this.html_url = html_url;
-        this.repoName = repoName;
+        this.repositoryName = repositoryName;
         this.user = user;
         this.labels = labels;
         this.state = state;
@@ -42,7 +42,7 @@ public class Issue implements Parcelable {
         title = in.readString();
         id = in.readLong();
         html_url = in.readString();
-        repoName = in.readString();
+        repositoryName = in.readString();
         user = in.readParcelable(User.class.getClassLoader());
         labels = in.createTypedArrayList(Label.CREATOR);
         state = in.readString();
@@ -85,12 +85,12 @@ public class Issue implements Parcelable {
         this.html_url = html_url;
     }
 
-    public String getRepoName() {
-        return repoName;
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     public User getUser() {
@@ -135,7 +135,7 @@ public class Issue implements Parcelable {
         dest.writeString(title);
         dest.writeLong(id);
         dest.writeString(html_url);
-        dest.writeString(repoName);
+        dest.writeString(repositoryName);
         dest.writeParcelable(user, flags);
         dest.writeTypedList(labels);
         dest.writeString(state);
@@ -148,7 +148,7 @@ public class Issue implements Parcelable {
                 "title='" + title + '\'' +
                 ", id=" + id +
                 ", html_url='" + html_url + '\'' +
-                ", repoName='" + repoName + '\'' +
+                ", repositoryName='" + repositoryName + '\'' +
                 ", user=" + user +
                 ", labels=" + labels +
                 ", state='" + state + '\'' +

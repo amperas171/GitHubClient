@@ -16,9 +16,9 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.provider.IssuesProvider;
-import com.amperas17.wonderstest.data.repository.IssuesRepository;
+import com.amperas17.wonderstest.data.cache.IssuesCache;
 import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.model.pojo.Repository;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
@@ -31,11 +31,11 @@ import io.realm.RealmResults;
 
 public class IssuesActivity extends AppCompatActivity implements IssuesProvider.IIssuesCaller {
 
-    public static final String REPO_ARG = "user";
+    public static final String REPOSITORY_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private IssuesProvider provider;
-    private IssuesRepository repository;
+    private IssuesProvider issuesProvider;
+    private IssuesCache issuesCache;
 
     private IssueAdapter issueAdapter;
 
@@ -44,9 +44,9 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
 
     private boolean isUpdating = false;
 
-    public static Intent newIntent(Context context, Repo repo) {
+    public static Intent newIntent(Context context, Repository repository) {
         Intent intent = new Intent(context, IssuesActivity.class);
-        intent.putExtra(REPO_ARG, repo);
+        intent.putExtra(REPOSITORY_ARG, repository);
         return intent;
     }
 
@@ -55,8 +55,8 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_issues);
 
-        provider = new IssuesProvider(this);
-        repository = new IssuesRepository();
+        issuesProvider = new IssuesProvider(this);
+        issuesCache = new IssuesCache();
 
         initActionBar();
 
@@ -65,7 +65,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(repository.getIssuesByRepoName(getRepoArg().getName()));
+        setDataToAdapter(issuesCache.getIssuesByRepositoryName(getRepositoryArg().getName()));
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -80,7 +80,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setTitle(getRepoArg().getName());
+            getSupportActionBar().setTitle(getRepositoryArg().getName());
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -134,14 +134,14 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        provider.cancel();
-        repository.close();
+        issuesProvider.cancel();
+        issuesCache.close();
     }
 
     private void getIssues() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        provider.getData(getRepoArg().getOwner().getLogin(), getRepoArg().getName());
+        issuesProvider.getData(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
     }
 
     @Override
@@ -157,7 +157,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     private void onGetIssuesSuccess(final ArrayList<Issue> issues) {
         stopRefreshing();
         if (issues != null && !issues.isEmpty()) {
-            repository.setIssues(issues, getRepoArg().getName());
+            issuesCache.setIssues(issues, getRepositoryArg().getName());
         } else {
             tvNoData.setVisibility(View.VISIBLE);
         }
@@ -199,7 +199,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         }
     }
 
-    private Repo getRepoArg() {
-        return getIntent().getParcelableExtra(REPO_ARG);
+    private Repository getRepositoryArg() {
+        return getIntent().getParcelableExtra(REPOSITORY_ARG);
     }
 }

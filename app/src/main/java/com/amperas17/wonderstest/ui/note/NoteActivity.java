@@ -14,9 +14,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.repository.NoteRepository;
+import com.amperas17.wonderstest.data.cache.NoteCache;
 import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.model.pojo.Repository;
 import com.amperas17.wonderstest.model.realm.RealmNote;
 
 
@@ -24,7 +24,7 @@ public class NoteActivity extends AppCompatActivity {
 
     public static final String ITEM_KEY = "itemKey";
 
-    private NoteRepository repository;
+    private NoteCache noteCache;
 
     private EditText etTitle;
     private EditText etText;
@@ -40,7 +40,7 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-        repository = new NoteRepository();
+        noteCache = new NoteCache();
 
         initActionBar();
 
@@ -80,12 +80,12 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        repository.close();
+        noteCache.close();
     }
 
 
     private void fillFields() {
-        RealmNote note = repository.getNote(getItemKey());
+        RealmNote note = noteCache.getNote(getItemKey());
         if (note != null) {
             etTitle.setText(note.getTitle());
             etText.setText(note.getText());
@@ -94,14 +94,14 @@ public class NoteActivity extends AppCompatActivity {
 
     private String getItemKey() {
         Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
-        if (item instanceof Repo) return ((Repo) item).getName();
+        if (item instanceof Repository) return ((Repository) item).getName();
         if (item instanceof Issue) return ((Issue) item).getId().toString();
         return "";
     }
 
     private String getItemName() {
         Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
-        if (item instanceof Repo) return ((Repo) item).getName();
+        if (item instanceof Repository) return ((Repository) item).getName();
         if (item instanceof Issue) return ((Issue) item).getTitle();
         return "";
     }
@@ -117,7 +117,7 @@ public class NoteActivity extends AppCompatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            repository.setNote(getItemKey(), etTitle.getText().toString(), etText.getText().toString());
+            noteCache.setNote(getItemKey(), etTitle.getText().toString(), etText.getText().toString());
         }
     };
 

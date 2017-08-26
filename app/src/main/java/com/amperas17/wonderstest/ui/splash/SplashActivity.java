@@ -6,23 +6,23 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.repository.UserRepository;
+import com.amperas17.wonderstest.data.cache.UserCache;
 import com.amperas17.wonderstest.model.pojo.User;
-import com.amperas17.wonderstest.ui.repos.ReposActivity;
+import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 
 
-public class SplashActivity extends AppCompatActivity implements UserRepository.IGetUser {
+public class SplashActivity extends AppCompatActivity implements UserCache.ICachedUserCaller {
 
     public static final int DELAY = 2;
 
-    private UserRepository repository;
+    private UserCache userCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        repository = new UserRepository(this);
+        userCache = new UserCache(this);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -33,7 +33,7 @@ public class SplashActivity extends AppCompatActivity implements UserRepository.
     }
 
     private void checkUserAndOpenActivity() {
-        repository.getUser();
+        userCache.getUser();
     }
 
     @Override
@@ -48,13 +48,13 @@ public class SplashActivity extends AppCompatActivity implements UserRepository.
     }
 
     private void openUserInfoActivity(User user) {
-        startActivity(ReposActivity.newIntent(SplashActivity.this, user));
+        startActivity(RepositoriesActivity.newIntent(SplashActivity.this, user));
         SplashActivity.this.finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        repository.close();
+        userCache.close();
     }
 }

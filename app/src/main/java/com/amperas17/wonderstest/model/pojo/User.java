@@ -16,7 +16,7 @@ public class User implements Parcelable {
     @SerializedName("html_url")
     private String html_url;
     @SerializedName("repos_url")
-    private String reposUrl;
+    private String repositoriesUrl;
     @SerializedName("type")
     private String type;
     @SerializedName("company")
@@ -29,7 +29,7 @@ public class User implements Parcelable {
         avatarUrl = in.readString();
         url = in.readString();
         html_url = in.readString();
-        reposUrl = in.readString();
+        repositoriesUrl = in.readString();
         type = in.readString();
         company = in.readString();
         authHeader = in.readString();
@@ -47,12 +47,12 @@ public class User implements Parcelable {
         }
     };
 
-    public User(String login, String avatarUrl, String url, String html_url, String reposUrl, String type, String company, String authHeader) {
+    public User(String login, String avatarUrl, String url, String html_url, String repositoriesUrl, String type, String company, String authHeader) {
         this.login = login;
         this.avatarUrl = avatarUrl;
         this.url = url;
         this.html_url = html_url;
-        this.reposUrl = reposUrl;
+        this.repositoriesUrl = repositoriesUrl;
         this.type = type;
         this.company = company;
         this.authHeader = authHeader;
@@ -69,7 +69,7 @@ public class User implements Parcelable {
         dest.writeString(avatarUrl);
         dest.writeString(url);
         dest.writeString(html_url);
-        dest.writeString(reposUrl);
+        dest.writeString(repositoriesUrl);
         dest.writeString(type);
         dest.writeString(company);
         dest.writeString(authHeader);
@@ -107,12 +107,12 @@ public class User implements Parcelable {
         this.html_url = html_url;
     }
 
-    public String getReposUrl() {
-        return reposUrl;
+    public String getRepositoriesUrl() {
+        return repositoriesUrl;
     }
 
-    public void setReposUrl(String reposUrl) {
-        this.reposUrl = reposUrl;
+    public void setRepositoriesUrl(String repositoriesUrl) {
+        this.repositoriesUrl = repositoriesUrl;
     }
 
     public String getType() {
@@ -146,7 +146,7 @@ public class User implements Parcelable {
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", url='" + url + '\'' +
                 ", html_url='" + html_url + '\'' +
-                ", reposUrl='" + reposUrl + '\'' +
+                ", repositoriesUrl='" + repositoriesUrl + '\'' +
                 ", type='" + type + '\'' +
                 ", company='" + company + '\'' +
                 ", authHeader='" + authHeader + '\'' +

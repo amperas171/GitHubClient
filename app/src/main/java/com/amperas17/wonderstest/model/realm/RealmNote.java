@@ -5,7 +5,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class RealmNote extends RealmObject{
-    public static final String REPO_KEY = "itemKey";
+    public static final String REPOSITORY_KEY = "itemKey";
 
     @PrimaryKey
     private String itemKey;

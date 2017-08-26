@@ -1,12 +1,12 @@
 package com.amperas17.wonderstest.model.realm;
 
 
-import com.amperas17.wonderstest.model.pojo.Repo;
+import com.amperas17.wonderstest.model.pojo.Repository;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class RealmRepo extends RealmObject {
+public class RealmRepository extends RealmObject {
     public static final String OWNER_LOGIN = "owner.login";
 
     @PrimaryKey
@@ -21,24 +21,24 @@ public class RealmRepo extends RealmObject {
     private String clone_url;
     private String updated_at;
 
-    public RealmRepo(Repo repo) {
-        this.name = repo.getName();
-        this.owner = new RealmUser(repo.getOwner());
-        this.isPrivate = repo.isPrivate();
-        this.html_url = repo.getHtml_url();
-        this.description = repo.getDescription();
-        this.url = repo.getUrl();
-        this.hasIssues = repo.isHasIssues();
-        this.openIssues = repo.getOpenIssues();
-        this.clone_url = repo.getClone_url();
-        this.updated_at = repo.getUpdated_at();
+    public RealmRepository(Repository repository) {
+        this.name = repository.getName();
+        this.owner = new RealmUser(repository.getOwner());
+        this.isPrivate = repository.isPrivate();
+        this.html_url = repository.getHtml_url();
+        this.description = repository.getDescription();
+        this.url = repository.getUrl();
+        this.hasIssues = repository.isHasIssues();
+        this.openIssues = repository.getOpenIssues();
+        this.clone_url = repository.getClone_url();
+        this.updated_at = repository.getUpdated_at();
     }
 
-    public RealmRepo() {
+    public RealmRepository() {
     }
 
-    public Repo toRepo() {
-        return new Repo(name, owner.toUser(), isPrivate, html_url, description, url, hasIssues, openIssues, clone_url, updated_at);
+    public Repository toRepository() {
+        return new Repository(name, owner.toUser(), isPrivate, html_url, description, url, hasIssues, openIssues, clone_url, updated_at);
     }
 
     public String getName() {

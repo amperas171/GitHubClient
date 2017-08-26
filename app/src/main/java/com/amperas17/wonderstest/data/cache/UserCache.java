@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.data.repository;
+package com.amperas17.wonderstest.data.cache;
 
 
 import com.amperas17.wonderstest.model.pojo.User;
@@ -8,16 +8,16 @@ import java.lang.ref.WeakReference;
 
 import io.realm.Realm;
 
-public class UserRepository {
-    private WeakReference<IGetUser> callerRef;
+public class UserCache {
+    private WeakReference<ICachedUserCaller> callerRef;
     private Realm realm;
 
-    public UserRepository(IGetUser caller) {
+    public UserCache(ICachedUserCaller caller) {
         this.callerRef = new WeakReference<>(caller);
         realm = Realm.getDefaultInstance();
     }
 
-    public UserRepository() {
+    public UserCache() {
         realm = Realm.getDefaultInstance();
     }
 
@@ -52,7 +52,7 @@ public class UserRepository {
         }
     }
 
-    public interface IGetUser {
+    public interface ICachedUserCaller {
         void onGetUser(User user);
     }
 }

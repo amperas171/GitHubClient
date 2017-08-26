@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Repo implements Parcelable {
+public class Repository implements Parcelable {
     @SerializedName("name")
     private String name;
     @SerializedName("owner")
@@ -28,7 +28,7 @@ public class Repo implements Parcelable {
     @SerializedName("updated_at")
     private String updated_at;
 
-    protected Repo(Parcel in) {
+    protected Repository(Parcel in) {
         name = in.readString();
         owner = in.readParcelable(User.class.getClassLoader());
         isPrivate = in.readByte() != 0;
@@ -41,19 +41,19 @@ public class Repo implements Parcelable {
         updated_at = in.readString();
     }
 
-    public static final Creator<Repo> CREATOR = new Creator<Repo>() {
+    public static final Creator<Repository> CREATOR = new Creator<Repository>() {
         @Override
-        public Repo createFromParcel(Parcel in) {
-            return new Repo(in);
+        public Repository createFromParcel(Parcel in) {
+            return new Repository(in);
         }
 
         @Override
-        public Repo[] newArray(int size) {
-            return new Repo[size];
+        public Repository[] newArray(int size) {
+            return new Repository[size];
         }
     };
 
-    public Repo(String name, User owner, boolean isPrivate, String html_url, String description, String url, boolean hasIssues, int openIssues, String clone_url, String updated_at) {
+    public Repository(String name, User owner, boolean isPrivate, String html_url, String description, String url, boolean hasIssues, int openIssues, String clone_url, String updated_at) {
         this.name = name;
         this.owner = owner;
         this.isPrivate = isPrivate;
@@ -148,7 +148,7 @@ public class Repo implements Parcelable {
 
     @Override
     public String toString() {
-        return "Repo{" +
+        return "Repository{" +
                 "name='" + name + '\'' +
                 ", owner=" + owner +
                 ", isPrivate=" + isPrivate +

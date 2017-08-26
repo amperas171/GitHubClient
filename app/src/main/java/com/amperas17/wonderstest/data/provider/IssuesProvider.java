@@ -20,8 +20,8 @@ public class IssuesProvider {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
-    public void getData(String login, String repoName) {
-        call = App.getGitHubApi().getIssues(login, repoName);
+    public void getData(String login, String repositoryName) {
+        call = App.getGitHubApi().getIssues(login, repositoryName);
         call.enqueue(new Callback<ArrayList<Issue>>() {
             @Override
             public void onResponse(Call<ArrayList<Issue>> call, Response<ArrayList<Issue>> response) {

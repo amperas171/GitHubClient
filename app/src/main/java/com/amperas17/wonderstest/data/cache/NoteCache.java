@@ -1,20 +1,20 @@
-package com.amperas17.wonderstest.data.repository;
+package com.amperas17.wonderstest.data.cache;
 
 
 import com.amperas17.wonderstest.model.realm.RealmNote;
 
 import io.realm.Realm;
 
-public class NoteRepository {
+public class NoteCache {
 
     private Realm realm;
 
-    public NoteRepository() {
+    public NoteCache() {
         realm = Realm.getDefaultInstance();
     }
 
     public RealmNote getNote(String itemKey) {
-        return realm.where(RealmNote.class).equalTo(RealmNote.REPO_KEY, itemKey).findFirst();
+        return realm.where(RealmNote.class).equalTo(RealmNote.REPOSITORY_KEY, itemKey).findFirst();
     }
 
     public void setNote(String itemKey, String title, String text) {

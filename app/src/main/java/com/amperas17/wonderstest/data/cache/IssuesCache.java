@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.data.repository;
+package com.amperas17.wonderstest.data.cache;
 
 
 import com.amperas17.wonderstest.model.pojo.Issue;
@@ -10,17 +10,17 @@ import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class IssuesRepository {
+public class IssuesCache {
 
     private Realm realm;
 
-    public IssuesRepository() {
+    public IssuesCache() {
         realm = Realm.getDefaultInstance();
     }
 
-    public RealmResults<RealmIssue> getIssuesByRepoName(final String repoName) {
+    public RealmResults<RealmIssue> getIssuesByRepositoryName(final String repositoryName) {
         return realm.where(RealmIssue.class)
-                .equalTo(RealmIssue.REPO_NAME, repoName)
+                .equalTo(RealmIssue.REPOSITORY_NAME, repositoryName)
                 .findAll();
     }
 
@@ -34,14 +34,14 @@ public class IssuesRepository {
                 .findAllSorted(RealmIssue.TITLE);
     }
 
-    public void setIssues(final ArrayList<Issue> issues, final String repoName) {
+    public void setIssues(final ArrayList<Issue> issues, final String repositoryName) {
         if (!realm.isClosed())
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     for (Issue issue : issues) {
                         RealmIssue realmIssue = new RealmIssue(issue);
-                        realmIssue.setRepoName(repoName);
+                        realmIssue.setRepositoryName(repositoryName);
                         realm.insertOrUpdate(realmIssue);
                     }
                 }
