@@ -21,19 +21,22 @@ public class UserRepository {
         realm = Realm.getDefaultInstance();
     }
 
-    public void getUser(){
+    public void getUser() {
         if (!realm.isClosed())
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     RealmUser realmUser = realm.where(RealmUser.class).findFirst();
-                    if (callerRef != null)
-                        callerRef.get().onGetUser(realmUser.toUser());
+                    if (callerRef != null) {
+                        if (realmUser != null)
+                            callerRef.get().onGetUser(realmUser.toUser());
+                        else callerRef.get().onGetUser(null);
+                    }
                 }
             });
     }
 
-    public void setUser(final RealmUser realmUser){
+    public void setUser(final RealmUser realmUser) {
         if (!realm.isClosed())
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
@@ -43,7 +46,7 @@ public class UserRepository {
             });
     }
 
-    public void close(){
+    public void close() {
         if (realm != null) {
             realm.close();
         }

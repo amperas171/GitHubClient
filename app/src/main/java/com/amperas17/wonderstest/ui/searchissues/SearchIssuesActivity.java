@@ -138,6 +138,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (!searchView.isIconified()) {
+            searchView.setQuery("", false);
             searchView.setIconified(true);
             setDataToAdapter(repository.getAllIssues());
         } else super.onBackPressed();

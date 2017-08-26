@@ -138,23 +138,23 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
     @Override
     public void onGetRepos(ArrayList<Repo> repos) {
         onGetReposSuccess(repos);
-        stopRefreshing();
     }
 
     @Override
     public void onError(Throwable th) {
-        onGetReposError();
+        onGetReposError(th);
     }
 
     private void onGetReposSuccess(final ArrayList<Repo> repos) {
+        stopRefreshing();
         if (repos != null && !repos.isEmpty()) {
             reposRepository.setRepos(repos);
         }
     }
 
-    private void onGetReposError() {
+    private void onGetReposError(Throwable th) {
         stopRefreshing();
-        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
