@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -67,7 +68,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         erasingRepository = new ErasingRepository(this);
         provider = new ReposProvider(this);
 
-        getSupportActionBar().setTitle(getUserArg().getLogin());
+        initActionBar();
 
         tvNoData = (TextView) findViewById(R.id.tvNoData);
 
@@ -83,6 +84,13 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
             }
         } else {
             getRepos();
+        }
+    }
+
+    private void initActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setTitle(getUserArg().getLogin());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.amperas17.wonderstest.ui.auth;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -34,7 +35,7 @@ public class AuthActivity extends AppCompatActivity
         repository = new UserRepository();
         provider = new AuthProvider(this);
 
-        getSupportActionBar().setTitle(R.string.auth_title);
+        initActionBar();
 
         etLogin = (EditText) findViewById(R.id.etLogin);
         etPassword = (EditText) findViewById(R.id.etPassword);
@@ -45,6 +46,25 @@ public class AuthActivity extends AppCompatActivity
                 verifyFieldsAndAuth();
             }
         });
+    }
+
+    private void initActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setTitle(R.string.auth_title);
+        }
+    }
+
+    @Override
+    public void onLoadingDialogCancel() {
+        provider.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        provider.cancel();
+        repository.close();
     }
 
     private void verifyFieldsAndAuth() {
@@ -93,17 +113,5 @@ public class AuthActivity extends AppCompatActivity
 
     private String getAuthHeader(String login, String password) {
         return "Basic " + Base64.encodeToString((login + ":" + password).getBytes(), Base64.DEFAULT).replace("\n", "");
-    }
-
-    @Override
-    public void onLoadingDialogCancel() {
-        provider.cancel();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        provider.cancel();
-        repository.close();
     }
 }

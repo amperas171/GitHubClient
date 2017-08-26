@@ -1,6 +1,7 @@
 package com.amperas17.wonderstest.ui.searchissues;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +27,6 @@ public class SearchIssuesActivity extends AppCompatActivity {
     public static final String IS_SEARCHING_TAG = "isSearching";
 
     private IssuesRepository repository;
-    private RecyclerView recyclerView;
 
     private IssueAdapter issueAdapter;
 
@@ -43,8 +43,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
 
         repository = new IssuesRepository();
 
-        getSupportActionBar().setTitle(getString(R.string.search));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initActionBar();
 
         tvNoData = (TextView) findViewById(R.id.tvNoData);
 
@@ -60,6 +59,14 @@ public class SearchIssuesActivity extends AppCompatActivity {
         }
     }
 
+    private void initActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setTitle(getString(R.string.search));
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     private void initRecyclerView() {
         issueAdapter = new IssueAdapter(new AdapterItemLongClickListener<Issue>() {
             @Override
@@ -68,7 +75,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(issueAdapter);
     }

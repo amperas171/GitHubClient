@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,8 +58,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         provider = new IssuesProvider(this);
         repository = new IssuesRepository();
 
-        getSupportActionBar().setTitle(getRepoArg().getName());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initActionBar();
 
         tvNoData = (TextView) findViewById(R.id.tvNoData);
 
@@ -74,6 +74,14 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
             }
         } else {
             getIssues();
+        }
+    }
+
+    private void initActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setTitle(getRepoArg().getName());
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -130,7 +138,6 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         repository.close();
     }
 
-
     private void getIssues() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
@@ -150,7 +157,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     private void onGetIssuesSuccess(final ArrayList<Issue> issues) {
         stopRefreshing();
         if (issues != null && !issues.isEmpty()) {
-            repository.setIssues(issues,getRepoArg().getName());
+            repository.setIssues(issues, getRepoArg().getName());
         } else {
             tvNoData.setVisibility(View.VISIBLE);
         }
