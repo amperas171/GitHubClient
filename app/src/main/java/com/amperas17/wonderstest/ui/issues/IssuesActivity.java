@@ -13,8 +13,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amperas17.wonderstest.App;
 import com.amperas17.wonderstest.R;
+import com.amperas17.wonderstest.data.provider.IssuesProvider;
+import com.amperas17.wonderstest.data.repository.IssuesRepository;
 import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.pojo.Repo;
 import com.amperas17.wonderstest.model.realm.RealmIssue;
@@ -23,21 +24,18 @@ import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
-public class IssuesActivity extends AppCompatActivity {
+public class IssuesActivity extends AppCompatActivity implements IssuesProvider.IIssuesCaller {
+
     public static final String REPO_ARG = "user";
-
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private Call<ArrayList<Issue>> call;
-    private Realm realm;
+    private IssuesProvider provider;
+    private IssuesRepository repository;
+
     private IssueAdapter issueAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -56,7 +54,8 @@ public class IssuesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_issues);
 
-        realm = Realm.getDefaultInstance();
+        provider = new IssuesProvider(this);
+        repository = new IssuesRepository();
 
         getSupportActionBar().setTitle(getRepoArg().getName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -66,7 +65,7 @@ public class IssuesActivity extends AppCompatActivity {
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(getRealmIssues());
+        setDataToAdapter(repository.getIssues(getRepoArg().getName()));
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -127,63 +126,39 @@ public class IssuesActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (call != null) {
-            call.cancel();
-            call = null;
-        }
-        realm.close();
+        provider.cancel();
+        repository.close();
     }
 
 
     private void getIssues() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        call = App.getGitHubApi().getIssues(getRepoArg().getOwner().getLogin(), getRepoArg().getName());
-        call.enqueue(new Callback<ArrayList<Issue>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Issue>> call, Response<ArrayList<Issue>> response) {
-                onGetIssuesSuccess(response.body());
-            }
+        provider.getData(getRepoArg().getOwner().getLogin(), getRepoArg().getName());
+    }
 
-            @Override
-            public void onFailure(Call<ArrayList<Issue>> call, Throwable t) {
-                if (!call.isCanceled())
-                    onGetIssuesError();
-            }
-        });
+    @Override
+    public void onGetIssues(ArrayList<Issue> issues) {
+        onGetIssuesSuccess(issues);
+    }
+
+    @Override
+    public void onError(Throwable th) {
+        onGetIssuesError(th);
     }
 
     private void onGetIssuesSuccess(final ArrayList<Issue> issues) {
+        stopRefreshing();
         if (issues != null && !issues.isEmpty()) {
-            realm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    for (Issue issue : issues) {
-                        RealmIssue realmIssue = new RealmIssue(issue);
-                        realmIssue.setRepoName(getRepoArg().getName());
-                        realm.insertOrUpdate(realmIssue);
-                    }
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    stopRefreshing();
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    stopRefreshing();
-                }
-            });
+            repository.setIssues(issues,getRepoArg().getName());
         } else {
-            stopRefreshing();
             tvNoData.setVisibility(View.VISIBLE);
         }
     }
 
-    private void onGetIssuesError() {
+    private void onGetIssuesError(Throwable th) {
         stopRefreshing();
-        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void stopRefreshing() {
@@ -216,13 +191,6 @@ public class IssuesActivity extends AppCompatActivity {
             });
 
         }
-    }
-
-    private RealmResults<RealmIssue> getRealmIssues() {
-        return realm.where(RealmIssue.class)
-                .equalTo(RealmIssue.REPO_NAME, getRepoArg().getName())
-                .findAll();
-
     }
 
     private Repo getRepoArg() {

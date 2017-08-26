@@ -5,15 +5,15 @@ import java.lang.ref.WeakReference;
 
 import io.realm.Realm;
 
-public class Repository {
+public class ErasingRepository {
     private Realm realm;
     private WeakReference<IEraseCaller> callerRef;
 
-    public Repository() {
+    public ErasingRepository() {
         realm = Realm.getDefaultInstance();
     }
 
-    public Repository(IEraseCaller caller) {
+    public ErasingRepository(IEraseCaller caller) {
         this.callerRef = new WeakReference<>(caller);
         realm = Realm.getDefaultInstance();
     }

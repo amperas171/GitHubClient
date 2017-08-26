@@ -14,7 +14,7 @@ import com.amperas17.wonderstest.ui.auth.AuthActivity;
 
 public class SplashActivity extends AppCompatActivity implements UserRepository.IGetUser {
 
-    public static final int DELAY = 2000;
+    public static final int DELAY = 2;
 
     private UserRepository repository;
 

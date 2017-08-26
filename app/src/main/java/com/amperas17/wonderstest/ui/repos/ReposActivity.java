@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.provider.ReposProvider;
 import com.amperas17.wonderstest.data.repository.ReposRepository;
-import com.amperas17.wonderstest.data.repository.Repository;
+import com.amperas17.wonderstest.data.repository.ErasingRepository;
 import com.amperas17.wonderstest.model.pojo.Repo;
 import com.amperas17.wonderstest.model.pojo.User;
 import com.amperas17.wonderstest.model.realm.RealmRepo;
@@ -37,13 +37,13 @@ import io.realm.RealmResults;
 
 
 public class ReposActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
-        ReposProvider.IReposCaller, Repository.IEraseCaller, ReposRepository.IReposCaller {
+        ReposProvider.IReposCaller, ErasingRepository.IEraseCaller {
 
     public static final String USER_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
     private ReposRepository reposRepository;
-    private Repository repository;
+    private ErasingRepository erasingRepository;
     private ReposProvider provider;
     private RepoAdapter repoAdapter;
 
@@ -63,8 +63,8 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        reposRepository = new ReposRepository(this);
-        repository = new Repository(this);
+        reposRepository = new ReposRepository();
+        erasingRepository = new ErasingRepository(this);
         provider = new ReposProvider(this);
 
         getSupportActionBar().setTitle(getUserArg().getLogin());
@@ -175,7 +175,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
         super.onDestroy();
         provider.cancel();
         reposRepository.close();
-        repository.close();
+        erasingRepository.close();
     }
 
     private void showExitDialog() {
@@ -194,7 +194,7 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
 
     private void exit() {
         LoadingDialog.show(getSupportFragmentManager());
-        repository.erase();
+        erasingRepository.erase();
     }
 
     @Override
@@ -257,10 +257,5 @@ public class ReposActivity extends AppCompatActivity implements LoadingDialog.IL
 
     private User getUserArg(){
         return getIntent().getParcelableExtra(USER_ARG);
-    }
-
-    @Override
-    public void onSetRepos() {
-        //setDataToAdapter(reposRepository.getRepos(getUserArg().getLogin()));
     }
 }
