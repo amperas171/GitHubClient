@@ -20,7 +20,7 @@
             android:layout_marginTop="@dimen/default_margin"
             android:background="@drawable/shape_chip_drawable_blue"
             android:hint="@string/title_hint"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_size_big"
             android:textStyle="bold"
             tools:text="Title" />
@@ -32,9 +32,10 @@
             android:layout_marginTop="@dimen/default_margin"
             android:background="@drawable/shape_chip_drawable_blue"
             android:hint="@string/text_hint"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_size_description"
             tools:text="etText" />
+
     </LinearLayout>
 
 </ScrollView>

@@ -26,7 +26,7 @@
             android:gravity="center"
             android:visibility="gone"
             android:text="@string/no_issues_in_repository"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_size_big" />
 
 

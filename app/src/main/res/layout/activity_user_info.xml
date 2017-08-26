@@ -25,7 +25,7 @@
             android:layout_marginRight="@dimen/default_margin"
             android:gravity="center"
             android:text="@string/no_repository_exists"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_size_big"
             android:visibility="gone" />
 
