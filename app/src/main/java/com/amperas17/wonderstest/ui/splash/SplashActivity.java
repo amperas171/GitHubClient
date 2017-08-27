@@ -28,12 +28,7 @@ public class SplashActivity extends AppCompatActivity implements UserProvider.IP
         userProvider = new UserProvider(this);
 
         handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                checkUserAndOpenActivity();
-            }
-        }, DELAY);
+        handler.postDelayed(checkUserRunnable, DELAY);
     }
 
     private void checkUserAndOpenActivity() {
@@ -54,7 +49,7 @@ public class SplashActivity extends AppCompatActivity implements UserProvider.IP
     protected void onDestroy() {
         super.onDestroy();
         userProvider.close();
-        handler.removeCallbacksAndMessages(null);
+        handler.removeCallbacks(checkUserRunnable);
     }
 
     private void doOnSuccess(User user){
@@ -71,4 +66,12 @@ public class SplashActivity extends AppCompatActivity implements UserProvider.IP
         startActivity(RepositoriesActivity.newIntent(SplashActivity.this, user));
         SplashActivity.this.finish();
     }
+
+    private Runnable checkUserRunnable = new Runnable() {
+        @Override
+        public void run() {
+            checkUserAndOpenActivity();
+        }
+    };
+
 }
