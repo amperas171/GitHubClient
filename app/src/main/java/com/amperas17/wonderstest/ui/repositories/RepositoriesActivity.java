@@ -24,6 +24,7 @@ import com.amperas17.wonderstest.data.cache.UserCacheEraser;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.pojo.User;
 import com.amperas17.wonderstest.data.model.realm.RealmRepository;
+import com.amperas17.wonderstest.data.provider.RepositoriesProvider;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
@@ -38,14 +39,14 @@ import io.realm.RealmResults;
 
 
 public class RepositoriesActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
-        RepositoriesLoader.IRepositoriesLoaderCaller, UserCacheEraser.IUserCacheEraseCaller {
+        UserCacheEraser.IUserCacheEraseCaller, RepositoriesProvider.IProviderCaller {
 
     public static final String USER_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private RepositoryCache repositoryCache;
+    private RepositoriesProvider repositoriesProvider;
     private UserCacheEraser userCacheEraser;
-    private RepositoriesLoader repositoriesLoader;
+
     private RepositoryAdapter repositoryAdapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -64,9 +65,10 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        repositoryCache = new RepositoryCache();
+        //repositoryCache = new RepositoryCache();
         userCacheEraser = new UserCacheEraser(this);
-        repositoriesLoader = new RepositoriesLoader(this);
+        //repositoriesLoader = new RepositoriesLoader(this);
+        repositoriesProvider = new RepositoriesProvider(this);
 
         initActionBar();
 
@@ -75,7 +77,7 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(repositoryCache.getRepositories(getUserArg().getLogin()));
+        repositoriesProvider.getRepositories(getUserArg().getLogin());
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -135,27 +137,17 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     private void getRepositories() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        repositoriesLoader.getData(getUserArg().getAuthHeader(), getUserArg().getLogin());
+        repositoriesProvider.getRepositoriesAndUpdate(getUserArg().getAuthHeader(), getUserArg().getLogin());
     }
 
     @Override
-    public void onLoadRepositories(ArrayList<Repository> repositories) {
-        doOnGetRepositories(repositories);
-    }
-
-    @Override
-    public void onLoadRepositoriesError(Throwable th) {
-        doOnGetRepositoriesError(th);
-    }
-
-    private void doOnGetRepositories(final ArrayList<Repository> repositories) {
+    public void onProviderCallSuccess(RealmResults<RealmRepository> repositories) {
         stopRefreshing();
-        if (repositories != null && !repositories.isEmpty()) {
-            repositoryCache.setRepositories(repositories);
-        }
+        setDataToAdapter(repositories);
     }
 
-    private void doOnGetRepositoriesError(Throwable th) {
+    @Override
+    public void onProviderCallError(Throwable th) {
         stopRefreshing();
         Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
@@ -184,8 +176,7 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        repositoriesLoader.cancel();
-        repositoryCache.close();
+        repositoriesProvider.close();
         userCacheEraser.close();
     }
 
@@ -232,7 +223,7 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
 
     @Override
     public void onLoadingDialogCancel() {
-        repositoriesLoader.cancel();
+        repositoriesProvider.close();
     }
 
     private void stopRefreshing() {
@@ -269,4 +260,5 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     private User getUserArg() {
         return getIntent().getParcelableExtra(USER_ARG);
     }
+
 }
