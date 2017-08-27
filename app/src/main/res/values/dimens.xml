@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="card_view_margin">2dp</dimen>
+    <dimen name="margin_very_small">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
     <dimen name="default_margin">16dp</dimen>
     <dimen name="btn_next_top_margin">24dp</dimen>
-    <dimen name="default_padding">16dp</dimen>
+
+    <dimen name="recycler_padding">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
-    <dimen name="margin_small">8dp</dimen>
-    <dimen name="margin_very_small">4dp</dimen>
     <dimen name="chips_padding_up">10dp</dimen>
     <dimen name="chips_padding_side">12dp</dimen>
-    <dimen name="text_size_big">20sp</dimen>
-    <dimen name="recycler_padding">4dp</dimen>
-    <dimen name="text_size_title">18sp</dimen>
-    <dimen name="text_size_description">16sp</dimen>
-    <dimen name="card_view_margin">2dp</dimen>
-    <dimen name="card_view_radius_chip">20dp</dimen>
+    <dimen name="default_padding">16dp</dimen>
+    <dimen name="padding_big">24dp</dimen>
+
     <dimen name="card_view_radius_small">6dp</dimen>
+    <dimen name="card_view_radius_chip">20dp</dimen>
+
+    <dimen name="text_size_description">16sp</dimen>
+    <dimen name="text_size_title">18sp</dimen>
+    <dimen name="text_size_big">20sp</dimen>
+    <dimen name="text_size_vary_big">36sp</dimen>
 </resources>

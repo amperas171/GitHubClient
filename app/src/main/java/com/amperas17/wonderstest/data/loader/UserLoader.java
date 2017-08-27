@@ -10,12 +10,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AuthLoader {
+public class UserLoader {
 
-    private WeakReference<IAuthLoaderCaller> callerRef;
+    private WeakReference<IUserLoaderCaller> callerRef;
     private Call<User> call;
 
-    public AuthLoader(IAuthLoaderCaller authCaller) {
+    public UserLoader(IUserLoaderCaller authCaller) {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
@@ -25,14 +25,14 @@ public class AuthLoader {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (callerRef.get() != null)
-                    callerRef.get().onLoadAuth(response.body(), authHeader);
+                    callerRef.get().onLoadUser(response.body(), authHeader);
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable th) {
                 if (!call.isCanceled()) {
                     if (callerRef.get() != null)
-                        callerRef.get().onLoadAuthError(th);
+                        callerRef.get().onLoadUserError(th);
                 }
             }
         });
@@ -45,9 +45,9 @@ public class AuthLoader {
         }
     }
 
-    public interface IAuthLoaderCaller {
-        void onLoadAuth(User user, String authHeader);
+    public interface IUserLoaderCaller {
+        void onLoadUser(User user, String authHeader);
 
-        void onLoadAuthError(Throwable th);
+        void onLoadUserError(Throwable th);
     }
 }

@@ -19,4 +19,6 @@
     <string name="note_to">Note to</string>
     <string name="title_hint">Title</string>
     <string name="text_hint">Text</string>
+    <string name="welcome">Welcome to WondersApp!</string>
+    <string name="glad_to_see_you">Glad to see you again!</string>
 </resources>

@@ -23,7 +23,7 @@ public class UserCache {
 
     public void getUser() {
         if (!realm.isClosed())
-            realm.executeTransaction(new Realm.Transaction() {
+            realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     RealmUser realmUser = realm.where(RealmUser.class).findFirst();
@@ -33,10 +33,18 @@ public class UserCache {
                         else callerRef.get().onGetUser(null);
                     }
                 }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    if (callerRef != null) {
+                        callerRef.get().onGetUser(null);
+                    }
+                }
             });
     }
 
-    public void setUser(final RealmUser realmUser) {
+    public void setUser(User user) {
+        final RealmUser realmUser = new RealmUser(user);
         if (!realm.isClosed())
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override

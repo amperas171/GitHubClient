@@ -3,37 +3,32 @@ package com.amperas17.wonderstest.ui.auth;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.loader.AuthLoader;
-import com.amperas17.wonderstest.data.cache.UserCache;
 import com.amperas17.wonderstest.data.model.pojo.User;
-import com.amperas17.wonderstest.data.model.realm.RealmUser;
+import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 
 public class AuthActivity extends AppCompatActivity
-        implements LoadingDialog.ILoadingDialog, AuthLoader.IAuthLoaderCaller {
+        implements LoadingDialog.ILoadingDialog, UserProvider.IProviderCaller  {
 
     private EditText etLogin;
     private EditText etPassword;
     private Button btnNext;
 
-    private UserCache userCache;
-    private AuthLoader authLoader;
+    private UserProvider userProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        userCache = new UserCache();
-        authLoader = new AuthLoader(this);
+        userProvider = new UserProvider(this);
 
         initActionBar();
 
@@ -56,15 +51,24 @@ public class AuthActivity extends AppCompatActivity
     }
 
     @Override
+    public void onProviderCallSuccess(User user) {
+        onAuthSuccess(user);
+    }
+
+    @Override
+    public void onProviderCallError(Throwable th) {
+        onAuthError(th);
+    }
+
+    @Override
     public void onLoadingDialogCancel() {
-        authLoader.cancel();
+        userProvider.close();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        authLoader.cancel();
-        userCache.close();
+        userProvider.close();
     }
 
     private void verifyFieldsAndAuth() {
@@ -78,40 +82,26 @@ public class AuthActivity extends AppCompatActivity
     }
 
     public void auth(String login, String password) {
-        String authHeader = getAuthHeader(login, password);
-        authLoader.getData(authHeader);
-        LoadingDialog.show(getSupportFragmentManager());
+        showLoadingDialog();
+        userProvider.getUser(login, password);
     }
 
-    @Override
-    public void onLoadAuth(User user, String authHeader) {
-        onAuthSuccess(user, authHeader);
-    }
-
-    @Override
-    public void onLoadAuthError(Throwable th) {
-        onAuthError(th);
-    }
-
-    private void onAuthSuccess(User user, String authHeader) {
-        user.setAuthHeader(authHeader);
-        saveUser(user);
-        LoadingDialog.dismiss(getSupportFragmentManager());
+    private void onAuthSuccess(User user) {
+        hideLoadingDialog();
         startActivity(RepositoriesActivity.newIntent(this, user));
         finish();
     }
 
-    private void saveUser(User user) {
-        final RealmUser realmUser = new RealmUser(user);
-        userCache.setUser(realmUser);
-    }
-
     private void onAuthError(Throwable th) {
-        LoadingDialog.dismiss(getSupportFragmentManager());
+        hideLoadingDialog();
         Toast.makeText(AuthActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
-    private String getAuthHeader(String login, String password) {
-        return "Basic " + Base64.encodeToString((login + ":" + password).getBytes(), Base64.DEFAULT).replace("\n", "");
+    private void showLoadingDialog(){
+        LoadingDialog.show(getSupportFragmentManager());
+    }
+
+    private void hideLoadingDialog(){
+        LoadingDialog.show(getSupportFragmentManager());
     }
 }
