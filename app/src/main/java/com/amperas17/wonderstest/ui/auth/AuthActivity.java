@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.provider.AuthProvider;
+import com.amperas17.wonderstest.data.loader.AuthLoader;
 import com.amperas17.wonderstest.data.cache.UserCache;
 import com.amperas17.wonderstest.model.pojo.User;
 import com.amperas17.wonderstest.model.realm.RealmUser;
@@ -18,14 +18,14 @@ import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 
 public class AuthActivity extends AppCompatActivity
-        implements LoadingDialog.ILoadingDialog, AuthProvider.IAuthCaller {
+        implements LoadingDialog.ILoadingDialog, AuthLoader.IAuthLoaderCaller {
 
     private EditText etLogin;
     private EditText etPassword;
     private Button btnNext;
 
     private UserCache userCache;
-    private AuthProvider authProvider;
+    private AuthLoader authLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class AuthActivity extends AppCompatActivity
         setContentView(R.layout.activity_auth);
 
         userCache = new UserCache();
-        authProvider = new AuthProvider(this);
+        authLoader = new AuthLoader(this);
 
         initActionBar();
 
@@ -57,13 +57,13 @@ public class AuthActivity extends AppCompatActivity
 
     @Override
     public void onLoadingDialogCancel() {
-        authProvider.cancel();
+        authLoader.cancel();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        authProvider.cancel();
+        authLoader.cancel();
         userCache.close();
     }
 
@@ -79,17 +79,17 @@ public class AuthActivity extends AppCompatActivity
 
     public void auth(String login, String password) {
         String authHeader = getAuthHeader(login, password);
-        authProvider.getData(authHeader);
+        authLoader.getData(authHeader);
         LoadingDialog.show(getSupportFragmentManager());
     }
 
     @Override
-    public void onGetAuth(User user, String authHeader) {
+    public void onLoadAuth(User user, String authHeader) {
         onAuthSuccess(user, authHeader);
     }
 
     @Override
-    public void onError(Throwable th) {
+    public void onLoadAuthError(Throwable th) {
         onAuthError(th);
     }
 

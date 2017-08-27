@@ -1,19 +1,21 @@
 package com.amperas17.wonderstest.data.cache;
 
 
+import com.amperas17.wonderstest.model.realm.RealmUser;
+
 import java.lang.ref.WeakReference;
 
 import io.realm.Realm;
 
-public class CacheEraser {
+public class UserCacheEraser {
     private Realm realm;
-    private WeakReference<IEraseCaller> callerRef;
+    private WeakReference<IUserCacheEraseCaller> callerRef;
 
-    public CacheEraser() {
+    public UserCacheEraser() {
         realm = Realm.getDefaultInstance();
     }
 
-    public CacheEraser(IEraseCaller caller) {
+    public UserCacheEraser(IUserCacheEraseCaller caller) {
         this.callerRef = new WeakReference<>(caller);
         realm = Realm.getDefaultInstance();
     }
@@ -23,19 +25,20 @@ public class CacheEraser {
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    realm.deleteAll();
+                    RealmUser user = realm.where(RealmUser.class).findFirst();
+                    user.deleteFromRealm();
                 }
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
                     if (callerRef != null)
-                        callerRef.get().onDeleted();
+                        callerRef.get().onUserCacheErased();
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
                 public void onError(Throwable error) {
                     if (callerRef != null)
-                        callerRef.get().onDeletedError(error);
+                        callerRef.get().onUserCacheErasedError(error);
                 }
             });
         }
@@ -47,8 +50,8 @@ public class CacheEraser {
         }
     }
 
-    public interface IEraseCaller{
-        void onDeleted();
-        void onDeletedError(Throwable error);
+    public interface IUserCacheEraseCaller {
+        void onUserCacheErased();
+        void onUserCacheErasedError(Throwable error);
     }
 }

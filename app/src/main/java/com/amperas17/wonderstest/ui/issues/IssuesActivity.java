@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.provider.IssuesProvider;
+import com.amperas17.wonderstest.data.loader.IssuesLoader;
 import com.amperas17.wonderstest.data.cache.IssuesCache;
 import com.amperas17.wonderstest.model.pojo.Issue;
 import com.amperas17.wonderstest.model.pojo.Repository;
@@ -29,12 +29,12 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class IssuesActivity extends AppCompatActivity implements IssuesProvider.IIssuesCaller {
+public class IssuesActivity extends AppCompatActivity implements IssuesLoader.IIssuesLoaderCaller {
 
     public static final String REPOSITORY_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private IssuesProvider issuesProvider;
+    private IssuesLoader issuesLoader;
     private IssuesCache issuesCache;
 
     private IssueAdapter issueAdapter;
@@ -55,7 +55,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_issues);
 
-        issuesProvider = new IssuesProvider(this);
+        issuesLoader = new IssuesLoader(this);
         issuesCache = new IssuesCache();
 
         initActionBar();
@@ -134,23 +134,23 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        issuesProvider.cancel();
+        issuesLoader.cancel();
         issuesCache.close();
     }
 
     private void getIssues() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        issuesProvider.getData(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
+        issuesLoader.getData(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
     }
 
     @Override
-    public void onGetIssues(ArrayList<Issue> issues) {
+    public void onLoadIssues(ArrayList<Issue> issues) {
         onGetIssuesSuccess(issues);
     }
 
     @Override
-    public void onError(Throwable th) {
+    public void onLoadIssuesError(Throwable th) {
         onGetIssuesError(th);
     }
 

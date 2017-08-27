@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.data.provider;
+package com.amperas17.wonderstest.data.loader;
 
 
 import com.amperas17.wonderstest.App;
@@ -10,12 +10,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AuthProvider {
+public class AuthLoader {
 
-    private WeakReference<IAuthCaller> callerRef;
+    private WeakReference<IAuthLoaderCaller> callerRef;
     private Call<User> call;
 
-    public AuthProvider(IAuthCaller authCaller) {
+    public AuthLoader(IAuthLoaderCaller authCaller) {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
@@ -25,14 +25,14 @@ public class AuthProvider {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (callerRef.get() != null)
-                    callerRef.get().onGetAuth(response.body(), authHeader);
+                    callerRef.get().onLoadAuth(response.body(), authHeader);
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable th) {
                 if (!call.isCanceled()) {
                     if (callerRef.get() != null)
-                        callerRef.get().onError(th);
+                        callerRef.get().onLoadAuthError(th);
                 }
             }
         });
@@ -45,9 +45,9 @@ public class AuthProvider {
         }
     }
 
-    public interface IAuthCaller {
-        void onGetAuth(User user, String authHeader);
+    public interface IAuthLoaderCaller {
+        void onLoadAuth(User user, String authHeader);
 
-        void onError(Throwable th);
+        void onLoadAuthError(Throwable th);
     }
 }

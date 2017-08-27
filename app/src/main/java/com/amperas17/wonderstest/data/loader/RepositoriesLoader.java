@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.data.provider;
+package com.amperas17.wonderstest.data.loader;
 
 
 import com.amperas17.wonderstest.App;
@@ -11,11 +11,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RepositoriesProvider {
-    private WeakReference<IRepositoriesCaller> callerRef;
+public class RepositoriesLoader {
+    private WeakReference<IRepositoriesLoaderCaller> callerRef;
     private Call<ArrayList<Repository>> call;
 
-    public RepositoriesProvider(IRepositoriesCaller authCaller) {
+    public RepositoriesLoader(IRepositoriesLoaderCaller authCaller) {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
@@ -25,14 +25,14 @@ public class RepositoriesProvider {
             @Override
             public void onResponse(Call<ArrayList<Repository>> call, Response<ArrayList<Repository>> response) {
                 if (callerRef.get() != null)
-                    callerRef.get().onGetRepositories(response.body());
+                    callerRef.get().onLoadRepositories(response.body());
             }
 
             @Override
             public void onFailure(Call<ArrayList<Repository>> call, Throwable t) {
                 if (!call.isCanceled()) {
                     if (callerRef.get() != null)
-                        callerRef.get().onGetRepositoriesError(t);
+                        callerRef.get().onLoadRepositoriesError(t);
                 }
             }
         });
@@ -45,8 +45,8 @@ public class RepositoriesProvider {
         }
     }
 
-    public interface IRepositoriesCaller {
-        void onGetRepositories(ArrayList<Repository> repositories);
-        void onGetRepositoriesError(Throwable th);
+    public interface IRepositoriesLoaderCaller {
+        void onLoadRepositories(ArrayList<Repository> repositories);
+        void onLoadRepositoriesError(Throwable th);
     }
 }

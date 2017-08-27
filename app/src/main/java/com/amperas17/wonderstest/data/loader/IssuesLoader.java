@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.data.provider;
+package com.amperas17.wonderstest.data.loader;
 
 
 import com.amperas17.wonderstest.App;
@@ -11,12 +11,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class IssuesProvider {
+public class IssuesLoader {
 
-    private WeakReference<IIssuesCaller> callerRef;
+    private WeakReference<IIssuesLoaderCaller> callerRef;
     private Call<ArrayList<Issue>> call;
 
-    public IssuesProvider(IIssuesCaller authCaller) {
+    public IssuesLoader(IIssuesLoaderCaller authCaller) {
         this.callerRef = new WeakReference<>(authCaller);
     }
 
@@ -26,14 +26,14 @@ public class IssuesProvider {
             @Override
             public void onResponse(Call<ArrayList<Issue>> call, Response<ArrayList<Issue>> response) {
                 if (callerRef.get() != null)
-                    callerRef.get().onGetIssues(response.body());
+                    callerRef.get().onLoadIssues(response.body());
             }
 
             @Override
             public void onFailure(Call<ArrayList<Issue>> call, Throwable t) {
                 if (!call.isCanceled()) {
                     if (callerRef.get() != null)
-                        callerRef.get().onError(t);
+                        callerRef.get().onLoadIssuesError(t);
                 }
             }
         });
@@ -46,9 +46,9 @@ public class IssuesProvider {
         }
     }
 
-    public interface IIssuesCaller {
-        void onGetIssues(ArrayList<Issue> issues);
+    public interface IIssuesLoaderCaller {
+        void onLoadIssues(ArrayList<Issue> issues);
 
-        void onError(Throwable th);
+        void onLoadIssuesError(Throwable th);
     }
 }
