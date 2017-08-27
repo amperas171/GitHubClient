@@ -4,7 +4,6 @@ package com.amperas17.wonderstest.data.provider;
 import com.amperas17.wonderstest.data.cache.RepositoryCache;
 import com.amperas17.wonderstest.data.loader.RepositoriesLoader;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
-import com.amperas17.wonderstest.data.model.pojo.User;
 import com.amperas17.wonderstest.data.model.realm.RealmRepository;
 
 import java.lang.ref.WeakReference;

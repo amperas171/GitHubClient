@@ -24,7 +24,7 @@ public class IssuesCache {
                 .findAll();
     }
 
-    public RealmResults<RealmIssue> getAllIssues() {
+    public RealmResults<RealmIssue> getIssues() {
         return realm.where(RealmIssue.class).findAll();
     }
 

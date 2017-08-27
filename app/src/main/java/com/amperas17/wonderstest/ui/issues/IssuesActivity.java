@@ -15,27 +15,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.loader.IssuesLoader;
-import com.amperas17.wonderstest.data.cache.IssuesCache;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
-
-import java.util.ArrayList;
 
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class IssuesActivity extends AppCompatActivity implements IssuesLoader.IIssuesLoaderCaller {
+public class IssuesActivity extends AppCompatActivity implements IssuesProvider.IProviderCaller /*IssuesLoader.IIssuesLoaderCaller*/  {
 
     public static final String REPOSITORY_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private IssuesLoader issuesLoader;
-    private IssuesCache issuesCache;
+    private IssuesProvider issuesProvider;
 
     private IssueAdapter issueAdapter;
 
@@ -55,8 +51,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesLoader.II
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_issues);
 
-        issuesLoader = new IssuesLoader(this);
-        issuesCache = new IssuesCache();
+        issuesProvider = new IssuesProvider(this);
 
         initActionBar();
 
@@ -65,7 +60,7 @@ public class IssuesActivity extends AppCompatActivity implements IssuesLoader.II
         initSwipe();
         initRecyclerView();
 
-        setDataToAdapter(issuesCache.getIssuesByRepositoryName(getRepositoryArg().getName()));
+        issuesProvider.getIssuesByRepository(getRepositoryArg().getName());
 
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
@@ -134,36 +129,23 @@ public class IssuesActivity extends AppCompatActivity implements IssuesLoader.II
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        issuesLoader.cancel();
-        issuesCache.close();
+        issuesProvider.close();
     }
 
     private void getIssues() {
         swipeRefreshLayout.setRefreshing(true);
         isUpdating = true;
-        issuesLoader.getData(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
+        issuesProvider.getIssuesAndUpdate(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
     }
 
     @Override
-    public void onLoadIssues(ArrayList<Issue> issues) {
-        onGetIssuesSuccess(issues);
-    }
-
-    @Override
-    public void onLoadIssuesError(Throwable th) {
-        onGetIssuesError(th);
-    }
-
-    private void onGetIssuesSuccess(final ArrayList<Issue> issues) {
+    public void onProviderCallSuccess(RealmResults<RealmIssue> issues) {
         stopRefreshing();
-        if (issues != null && !issues.isEmpty()) {
-            issuesCache.setIssues(issues, getRepositoryArg().getName());
-        } else {
-            tvNoData.setVisibility(View.VISIBLE);
-        }
+        setDataToAdapter(issues);
     }
 
-    private void onGetIssuesError(Throwable th) {
+    @Override
+    public void onProviderCallError(Throwable th) {
         stopRefreshing();
         Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }

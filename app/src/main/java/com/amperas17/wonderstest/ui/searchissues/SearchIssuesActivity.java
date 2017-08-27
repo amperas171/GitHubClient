@@ -12,22 +12,21 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.cache.IssuesCache;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import io.realm.RealmResults;
 
-public class SearchIssuesActivity extends AppCompatActivity {
+public class SearchIssuesActivity extends AppCompatActivity implements IssuesProvider.IProviderCaller {
 
     public static final String SEARCH_QUERY = "query";
     public static final String IS_SEARCHING_TAG = "isSearching";
 
-    private IssuesCache issuesCache;
-
+    private IssuesProvider issuesProvider;
     private IssueAdapter issueAdapter;
 
     private TextView tvNoData;
@@ -41,7 +40,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_issues);
 
-        issuesCache = new IssuesCache();
+        issuesProvider = new IssuesProvider(this);
 
         initActionBar();
 
@@ -49,7 +48,7 @@ public class SearchIssuesActivity extends AppCompatActivity {
 
         initRecyclerView();
 
-        setDataToAdapter(issuesCache.getAllIssues());
+        issuesProvider.getIssues();
 
         if (savedInstanceState != null) {
             isSearching = savedInstanceState.getBoolean(IS_SEARCHING_TAG, false);
@@ -115,12 +114,22 @@ public class SearchIssuesActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onProviderCallSuccess(RealmResults<RealmIssue> issues) {
+        setDataToAdapter(issues);
+    }
+
+    @Override
+    public void onProviderCallError(Throwable th) {
+
+    }
+
     private void onQueryTextChanged(String pattern) {
         query = pattern;
         if (!pattern.isEmpty()) {
-            setDataToAdapter(issuesCache.getSearchedIssues(pattern));
+            issuesProvider.getSearchedIssues(pattern);
         } else {
-            setDataToAdapter(issuesCache.getAllIssues());
+            issuesProvider.getIssues();
         }
     }
 
@@ -140,16 +149,15 @@ public class SearchIssuesActivity extends AppCompatActivity {
         if (!searchView.isIconified()) {
             searchView.setQuery("", false);
             searchView.setIconified(true);
-            setDataToAdapter(issuesCache.getAllIssues());
+            issuesProvider.getIssues();
         } else super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        issuesCache.close();
+        issuesProvider.close();
     }
-
 
     private void setDataToAdapter(RealmResults<RealmIssue> issues) {
         if (issues == null || issues.isEmpty()) {
@@ -160,5 +168,4 @@ public class SearchIssuesActivity extends AppCompatActivity {
         issueAdapter.setIssues(issues);
         issueAdapter.notifyDataSetChanged();
     }
-
 }
