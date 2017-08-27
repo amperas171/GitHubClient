@@ -51,7 +51,7 @@ public class AuthActivity extends AppCompatActivity
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setTitle(R.string.auth_title);
+            actionBar.setTitle(R.string.auth_title);
         }
     }
 

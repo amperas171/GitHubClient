@@ -80,8 +80,8 @@ public class IssuesActivity extends AppCompatActivity implements IssuesLoader.II
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setTitle(getRepositoryArg().getName());
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getRepositoryArg().getName());
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 

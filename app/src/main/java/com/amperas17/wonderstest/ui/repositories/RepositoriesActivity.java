@@ -90,11 +90,14 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setTitle(getUserArg().getLogin());
+            actionBar.setTitle(getUserArg().getLogin());
+            actionBar.setLogo(R.drawable.ic_git_small);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayUseLogoEnabled(true);
         }
     }
 
-    private void initSwipe(){
+    private void initSwipe() {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -263,7 +266,7 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         }
     }
 
-    private User getUserArg(){
+    private User getUserArg() {
         return getIntent().getParcelableExtra(USER_ARG);
     }
 }

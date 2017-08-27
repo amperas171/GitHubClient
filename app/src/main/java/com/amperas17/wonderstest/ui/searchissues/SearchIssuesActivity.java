@@ -62,8 +62,8 @@ public class SearchIssuesActivity extends AppCompatActivity {
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            getSupportActionBar().setTitle(getString(R.string.search));
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getString(R.string.search));
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
