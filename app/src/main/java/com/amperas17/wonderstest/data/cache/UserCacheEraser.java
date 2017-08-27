@@ -1,7 +1,7 @@
 package com.amperas17.wonderstest.data.cache;
 
 
-import com.amperas17.wonderstest.model.realm.RealmUser;
+import com.amperas17.wonderstest.data.model.realm.RealmUser;
 
 import java.lang.ref.WeakReference;
 

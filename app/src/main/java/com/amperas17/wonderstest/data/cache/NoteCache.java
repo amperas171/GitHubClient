@@ -1,7 +1,7 @@
 package com.amperas17.wonderstest.data.cache;
 
 
-import com.amperas17.wonderstest.model.realm.RealmNote;
+import com.amperas17.wonderstest.data.model.realm.RealmNote;
 
 import io.realm.Realm;
 

@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import org.apmem.tools.layouts.FlowLayout;

@@ -1,4 +1,4 @@
-package com.amperas17.wonderstest.model.realm;
+package com.amperas17.wonderstest.data.model.realm;
 
 
 import io.realm.RealmObject;

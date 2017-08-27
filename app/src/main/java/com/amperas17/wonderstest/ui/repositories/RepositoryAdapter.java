@@ -9,8 +9,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.model.pojo.Repository;
-import com.amperas17.wonderstest.model.realm.RealmRepository;
+import com.amperas17.wonderstest.data.model.pojo.Repository;
+import com.amperas17.wonderstest.data.model.realm.RealmRepository;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 
 import io.realm.RealmResults;

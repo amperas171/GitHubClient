@@ -1,9 +1,9 @@
 package com.amperas17.wonderstest.api;
 
 
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repository;
-import com.amperas17.wonderstest.model.pojo.User;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.pojo.Repository;
+import com.amperas17.wonderstest.data.model.pojo.User;
 
 import java.util.ArrayList;
 

@@ -1,8 +1,8 @@
 package com.amperas17.wonderstest.data.cache;
 
 
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.realm.RealmIssue;
 
 import java.util.ArrayList;
 

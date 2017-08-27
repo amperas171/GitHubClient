@@ -1,7 +1,7 @@
-package com.amperas17.wonderstest.model.realm;
+package com.amperas17.wonderstest.data.model.realm;
 
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Label;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.pojo.Label;
 
 import java.util.ArrayList;
 

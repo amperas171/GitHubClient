@@ -2,7 +2,7 @@ package com.amperas17.wonderstest.data.loader;
 
 
 import com.amperas17.wonderstest.App;
-import com.amperas17.wonderstest.model.pojo.Repository;
+import com.amperas17.wonderstest.data.model.pojo.Repository;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

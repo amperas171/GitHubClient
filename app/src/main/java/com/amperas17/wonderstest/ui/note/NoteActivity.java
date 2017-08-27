@@ -15,9 +15,9 @@ import android.widget.EditText;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.cache.NoteCache;
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repository;
-import com.amperas17.wonderstest.model.realm.RealmNote;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.pojo.Repository;
+import com.amperas17.wonderstest.data.model.realm.RealmNote;
 
 
 public class NoteActivity extends AppCompatActivity {

@@ -2,7 +2,7 @@ package com.amperas17.wonderstest.data.loader;
 
 
 import com.amperas17.wonderstest.App;
-import com.amperas17.wonderstest.model.pojo.User;
+import com.amperas17.wonderstest.data.model.pojo.User;
 
 import java.lang.ref.WeakReference;
 

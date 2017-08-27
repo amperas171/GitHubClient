@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.cache.UserCache;
-import com.amperas17.wonderstest.model.pojo.User;
+import com.amperas17.wonderstest.data.model.pojo.User;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 

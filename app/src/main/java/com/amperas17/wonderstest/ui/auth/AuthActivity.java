@@ -12,8 +12,8 @@ import android.widget.Toast;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.loader.AuthLoader;
 import com.amperas17.wonderstest.data.cache.UserCache;
-import com.amperas17.wonderstest.model.pojo.User;
-import com.amperas17.wonderstest.model.realm.RealmUser;
+import com.amperas17.wonderstest.data.model.pojo.User;
+import com.amperas17.wonderstest.data.model.realm.RealmUser;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 

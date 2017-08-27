@@ -17,9 +17,9 @@ import android.widget.Toast;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.loader.IssuesLoader;
 import com.amperas17.wonderstest.data.cache.IssuesCache;
-import com.amperas17.wonderstest.model.pojo.Issue;
-import com.amperas17.wonderstest.model.pojo.Repository;
-import com.amperas17.wonderstest.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.model.pojo.Issue;
+import com.amperas17.wonderstest.data.model.pojo.Repository;
+import com.amperas17.wonderstest.data.model.realm.RealmIssue;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
