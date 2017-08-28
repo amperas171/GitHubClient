@@ -7,15 +7,26 @@ import io.realm.RealmResults;
 
 public interface IRepositoryView {
     void setDataToAdapter(RealmResults<RealmRepository> repositories);
+
     void showError(Throwable th);
+
     void showExitDialog();
+
     void openSearchIssuesActivity();
+
     void openIssuesActivity(Repository repositoryItem);
+
     void openNoteActivity(Repository repositoryItem);
+
     void openAuthActivity();
+
     void updateAdapter();
+
     void showLoading();
+
     void hideLoading();
+
     void showRefreshing();
+
     void hideRefreshing();
 }

@@ -34,7 +34,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class RepositoriesActivity extends AppCompatActivity implements IRepositoryView, LoadingDialog.ILoadingDialog{
+public class RepositoriesActivity extends AppCompatActivity implements IRepositoryView, LoadingDialog.ILoadingDialog {
     static final String USER_ARG = "user";
     public static final String IS_UPDATING_TAG = "isRefreshing";
 
@@ -42,8 +42,10 @@ public class RepositoriesActivity extends AppCompatActivity implements IReposito
 
     private RepositoryAdapter repositoryAdapter;
 
-    @BindView(R.id.tvNoData) TextView tvNoData;
-    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.tvNoData)
+    TextView tvNoData;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isRefreshing = false;
 

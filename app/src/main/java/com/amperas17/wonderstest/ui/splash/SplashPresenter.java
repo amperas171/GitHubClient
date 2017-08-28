@@ -33,18 +33,21 @@ public class SplashPresenter implements ISplashPresenter, IProviderCaller<User> 
     @Override
     public void onProviderCallSuccess(User user) {
         if (user != null) {
-            if (viewRef.get() != null)
-                viewRef.get().openUserInfoActivity(user);
+            ISplashView view = viewRef.get();
+            if (view != null)
+                view.openUserInfoActivity(user);
         } else {
-            if (viewRef.get() != null)
-                viewRef.get().openAuthActivity();
+            ISplashView view = viewRef.get();
+            if (view != null)
+                view.openAuthActivity();
         }
     }
 
     @Override
     public void onProviderCallError(Throwable th) {
-        if (viewRef.get() != null)
-            viewRef.get().showError(th);
+        ISplashView view = viewRef.get();
+        if (view != null)
+            view.showError(th);
     }
 
     @Override

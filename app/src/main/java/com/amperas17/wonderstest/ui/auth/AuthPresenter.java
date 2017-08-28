@@ -19,35 +19,40 @@ public class AuthPresenter implements IAuthPresenter, IProviderCaller<User> {
     @Override
     public void verifyFieldsAndAuth(String login, String password) {
         if (login.isEmpty()) {
-            if (viewRef.get() != null)
-                viewRef.get().showLoginError();
+            IAuthView view = viewRef.get();
+            if (view != null)
+                view.showLoginError();
         } else if (password.isEmpty()) {
-            if (viewRef.get() != null)
-                viewRef.get().showPasswordError();
+            IAuthView view = viewRef.get();
+            if (view != null)
+                view.showPasswordError();
         } else {
             auth(login, password);
         }
     }
 
     public void auth(String login, String password) {
-        if (viewRef.get() != null)
-            viewRef.get().showLoader();
+        IAuthView view = viewRef.get();
+        if (view != null)
+            view.showLoader();
         userProvider.getUser(login, password);
     }
 
     @Override
     public void onProviderCallSuccess(User user) {
-        if (viewRef.get() != null) {
-            viewRef.get().hideLoader();
-            viewRef.get().openRepositoriesActivity(user);
+        IAuthView view = viewRef.get();
+        if (view != null) {
+            view.hideLoader();
+            view.openRepositoriesActivity(user);
         }
     }
 
     @Override
     public void onProviderCallError(Throwable th) {
-        if (viewRef.get() != null) {
-            viewRef.get().hideLoader();
-            viewRef.get().showAuthError(th);
+        IAuthView view = viewRef.get();
+        if (view != null) {
+            view.hideLoader();
+            view.showAuthError(th);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.amperas17.wonderstest.ui.repositories;
 
-
 import com.amperas17.wonderstest.data.cache.UserCacheEraser;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.pojo.User;
@@ -32,86 +31,97 @@ public class RepositoryPresenter implements IRepositoryPresenter,
 
     @Override
     public void getRepositories(User user) {
-        if (viewRef.get() != null) {
-            viewRef.get().showRefreshing();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.showRefreshing();
         }
         repositoriesProvider.getRepositories(user.getLogin());
     }
 
     @Override
     public void onProviderCallSuccess(RealmResults<RealmRepository> realmRepositories) {
-        if (viewRef.get() != null) {
-            viewRef.get().hideRefreshing();
-            viewRef.get().setDataToAdapter(realmRepositories);
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.hideRefreshing();
+            view.setDataToAdapter(realmRepositories);
         }
     }
 
     @Override
     public void onProviderCallError(Throwable th) {
-        if (viewRef.get() != null) {
-            viewRef.get().hideRefreshing();
-            viewRef.get().showError(th);
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.hideRefreshing();
+            view.showError(th);
         }
     }
 
     @Override
     public void getRepositoriesAndUpdate(User user) {
-        if (viewRef.get() != null) {
-            viewRef.get().showRefreshing();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.showRefreshing();
         }
         repositoriesProvider.getRepositoriesAndUpdate(user.getAuthHeader(), user.getLogin());
     }
 
     @Override
     public void onRepositoryItemClick(Repository repositoryItem) {
-        if (viewRef.get() != null) {
-            viewRef.get().openIssuesActivity(repositoryItem);
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.openIssuesActivity(repositoryItem);
         }
     }
 
     @Override
     public void onRepositoryItemLongClick(Repository repositoryItem) {
-        if (viewRef.get() != null) {
-            viewRef.get().openNoteActivity(repositoryItem);
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.openNoteActivity(repositoryItem);
         }
     }
 
     @Override
     public void onSearchIconSelected() {
-        if (viewRef.get() != null) {
-            viewRef.get().openSearchIssuesActivity();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.openSearchIssuesActivity();
         }
     }
 
     @Override
     public void onExitIconSelected() {
-        if (viewRef.get() != null) {
-            viewRef.get().showExitDialog();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.showExitDialog();
         }
     }
 
     @Override
     public void exit() {
-        if (viewRef.get() != null) {
-            viewRef.get().showLoading();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.showLoading();
         }
         userCacheEraser.erase();
     }
 
     @Override
     public void onUserCacheErased() {
-        if (viewRef.get() != null) {
-            viewRef.get().hideLoading();
-            viewRef.get().updateAdapter();
-            viewRef.get().openAuthActivity();
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.hideLoading();
+            view.updateAdapter();
+            view.openAuthActivity();
         }
     }
 
     @Override
     public void onUserCacheErasedError(Throwable th) {
-        if (viewRef.get() != null) {
-            viewRef.get().hideLoading();
-            viewRef.get().showError(th);
+        IRepositoryView view = viewRef.get();
+        if (view != null) {
+            view.hideLoading();
+            view.showError(th);
         }
     }
 
