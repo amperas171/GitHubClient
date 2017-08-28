@@ -18,12 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.cache.UserCacheEraser;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.pojo.User;
 import com.amperas17.wonderstest.data.model.realm.RealmRepository;
-import com.amperas17.wonderstest.data.provider.IProviderCaller;
-import com.amperas17.wonderstest.data.provider.RepositoriesProvider;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
@@ -37,21 +34,18 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class RepositoriesActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
-        UserCacheEraser.IUserCacheEraseCaller, IProviderCaller<RealmResults<RealmRepository>> {
+public class RepositoriesActivity extends AppCompatActivity implements IRepositoryView, LoadingDialog.ILoadingDialog{
+    static final String USER_ARG = "user";
+    public static final String IS_UPDATING_TAG = "isRefreshing";
 
-    public static final String USER_ARG = "user";
-    public static final String IS_UPDATING_TAG = "isUpdating";
-
-    private RepositoriesProvider repositoriesProvider;
-    private UserCacheEraser userCacheEraser;
+    private IRepositoryPresenter presenter;
 
     private RepositoryAdapter repositoryAdapter;
 
     @BindView(R.id.tvNoData) TextView tvNoData;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
-    private boolean isUpdating = false;
+    private boolean isRefreshing = false;
 
     public static Intent newIntent(Context context, User user) {
         Intent intent = new Intent(context, RepositoriesActivity.class);
@@ -65,29 +59,26 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         setContentView(R.layout.activity_user_info);
         ButterKnife.bind(this);
 
-        userCacheEraser = new UserCacheEraser(this);
-        repositoriesProvider = new RepositoriesProvider(this);
+        presenter = new RepositoryPresenter(this);
 
         initActionBar();
         initSwipe();
         initRecyclerView();
 
-        repositoriesProvider.getRepositories(getUserArg().getLogin());
-
         if (savedInstanceState != null) {
-            isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
-            if (isUpdating) {
-                getRepositories();
+            isRefreshing = savedInstanceState.getBoolean(IS_UPDATING_TAG);
+            if (isRefreshing) {
+                refresh();
             }
         } else {
-            getRepositories();
+            refresh();
         }
     }
 
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getUserArg().getLogin());
+            actionBar.setTitle(presenter.getActionBarTitle(getUserArg()));
             actionBar.setLogo(R.drawable.ic_git_small);
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayUseLogoEnabled(true);
@@ -99,7 +90,7 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getRepositories();
+                refresh();
             }
         });
     }
@@ -108,12 +99,12 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         repositoryAdapter = new RepositoryAdapter(new AdapterItemClicksListener<Repository>() {
             @Override
             public void onItemClick(Repository repositoryItem) {
-                startActivity(IssuesActivity.newIntent(RepositoriesActivity.this, repositoryItem));
+                presenter.onRepositoryItemClick(repositoryItem);
             }
 
             @Override
             public void onItemLongClick(Repository repositoryItem) {
-                startActivity(NoteActivity.newIntent(RepositoriesActivity.this, repositoryItem));
+                presenter.onRepositoryItemLongClick(repositoryItem);
             }
         });
 
@@ -123,26 +114,27 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     }
 
     @Override
+    public void openIssuesActivity(Repository repositoryItem) {
+        startActivity(IssuesActivity.newIntent(RepositoriesActivity.this, repositoryItem));
+    }
+
+    @Override
+    public void openNoteActivity(Repository repositoryItem) {
+        startActivity(NoteActivity.newIntent(RepositoriesActivity.this, repositoryItem));
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(IS_UPDATING_TAG, isUpdating);
+        outState.putBoolean(IS_UPDATING_TAG, isRefreshing);
     }
 
-    private void getRepositories() {
-        swipeRefreshLayout.setRefreshing(true);
-        isUpdating = true;
-        repositoriesProvider.getRepositoriesAndUpdate(getUserArg().getAuthHeader(), getUserArg().getLogin());
-    }
-
-    @Override
-    public void onProviderCallSuccess(RealmResults<RealmRepository> repositories) {
-        stopRefreshing();
-        setDataToAdapter(repositories);
+    private void refresh() {
+        presenter.getRepositoriesAndUpdate(getUserArg());
     }
 
     @Override
-    public void onProviderCallError(Throwable th) {
-        stopRefreshing();
+    public void showError(Throwable th) {
         Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
@@ -157,10 +149,10 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search:
-                startActivity(new Intent(this, SearchIssuesActivity.class));
+                presenter.onSearchIconSelected();
                 return true;
             case R.id.exit:
-                showExitDialog();
+                presenter.onExitIconSelected();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -168,19 +160,18 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        repositoriesProvider.close();
-        userCacheEraser.close();
+    public void openSearchIssuesActivity() {
+        startActivity(new Intent(this, SearchIssuesActivity.class));
     }
 
-    private void showExitDialog() {
+    @Override
+    public void showExitDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.exit_alert_message)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        exit();
+                        presenter.exit();
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -188,44 +179,53 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
         dialog.show();
     }
 
-    private void exit() {
-        LoadingDialog.show(getSupportFragmentManager());
-        userCacheEraser.erase();
-    }
-
     @Override
-    public void onUserCacheErased() {
-        onDeleteDataSuccess();
-    }
-
-    @Override
-    public void onUserCacheErasedError(Throwable error) {
-        onDeleteDataError();
-    }
-
-    private void onDeleteDataSuccess() {
-        LoadingDialog.dismiss(getSupportFragmentManager());
-        repositoryAdapter.notifyDataSetChanged();
+    public void openAuthActivity() {
         startActivity(new Intent(this, AuthActivity.class));
         finish();
     }
 
-    private void onDeleteDataError() {
-        LoadingDialog.dismiss(getSupportFragmentManager());
-        Toast.makeText(this, R.string.error_occurred_toast, Toast.LENGTH_SHORT).show();
+    @Override
+    public void updateAdapter() {
+        repositoryAdapter.notifyDataSetChanged();
     }
+
 
     @Override
     public void onLoadingDialogCancel() {
-        repositoriesProvider.close();
+        presenter.cancelLoading();
     }
 
-    private void stopRefreshing() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
+    }
+
+    @Override
+    public void showLoading() {
+        LoadingDialog.show(getSupportFragmentManager());
+    }
+
+    @Override
+    public void hideLoading() {
+        LoadingDialog.dismiss(getSupportFragmentManager());
+    }
+
+    @Override
+    public void hideRefreshing() {
         swipeRefreshLayout.setRefreshing(false);
-        isUpdating = false;
+        isRefreshing = false;
     }
 
-    private void setDataToAdapter(RealmResults<RealmRepository> repositories) {
+    @Override
+    public void showRefreshing() {
+        swipeRefreshLayout.setRefreshing(true);
+        isRefreshing = true;
+    }
+
+    @Override
+    public void setDataToAdapter(RealmResults<RealmRepository> repositories) {
         if (repositories == null) {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
