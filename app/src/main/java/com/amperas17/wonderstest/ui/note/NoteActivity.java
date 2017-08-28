@@ -12,24 +12,23 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.cache.NoteCache;
-import com.amperas17.wonderstest.data.model.pojo.Issue;
-import com.amperas17.wonderstest.data.model.pojo.Repository;
-import com.amperas17.wonderstest.data.model.realm.RealmNote;
+import com.amperas17.wonderstest.data.model.pojo.Note;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
 
 
-public class NoteActivity extends AppCompatActivity {
+public class NoteActivity extends AppCompatActivity implements INoteView {
 
     public static final String ITEM_KEY = "itemKey";
 
-    private NoteCache noteCache;
+    private INotePresenter presenter;
 
-    @BindView(R.id.etTitle) EditText etTitle;
-    @BindView(R.id.etText) EditText etText;
+    @BindView(R.id.etTitle)
+    EditText etTitle;
+    @BindView(R.id.etText)
+    EditText etText;
 
     public static Intent newIntent(Context context, Parcelable itemKey) {
         Intent intent = new Intent(context, NoteActivity.class);
@@ -43,11 +42,10 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         ButterKnife.bind(this);
 
-        noteCache = new NoteCache();
+        presenter = new NotePresenter(this);
+        presenter.onCreate(getKeyArg());
 
         initActionBar();
-
-        reflectNote();
     }
 
     @OnTextChanged(R.id.etTitle)
@@ -63,7 +61,7 @@ public class NoteActivity extends AppCompatActivity {
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getString(R.string.note_to) + " " + getItemName());
+            actionBar.setTitle(getString(R.string.note_to) + " " + presenter.getItemName(getKeyArg()));
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -85,35 +83,22 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     @Override
+    public void reflectNote(Note note) {
+        etTitle.setText(note.getTitle());
+        etText.setText(note.getText());
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        noteCache.close();
+        presenter.onDestroy();
     }
 
-
-    private void reflectNote() {
-        RealmNote note = noteCache.getNote(getItemKey());
-        if (note != null) {
-            etTitle.setText(note.getTitle());
-            etText.setText(note.getText());
-        }
+    private Parcelable getKeyArg() {
+        return getIntent().getParcelableExtra(ITEM_KEY);
     }
 
-    private String getItemKey() {
-        Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
-        if (item instanceof Repository) return ((Repository) item).getName();
-        if (item instanceof Issue) return ((Issue) item).getId().toString();
-        return "";
-    }
-
-    private String getItemName() {
-        Parcelable item = getIntent().getParcelableExtra(ITEM_KEY);
-        if (item instanceof Repository) return ((Repository) item).getName();
-        if (item instanceof Issue) return ((Issue) item).getTitle();
-        return "";
-    }
-
-    private void saveNote(){
-        noteCache.setNote(getItemKey(), etTitle.getText().toString(), etText.getText().toString());
+    private void saveNote() {
+        presenter.saveNote(getKeyArg(), etTitle.getText().toString(), etText.getText().toString());
     }
 }

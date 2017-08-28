@@ -1,10 +1,12 @@
 package com.amperas17.wonderstest.data.model.realm;
 
 
+import com.amperas17.wonderstest.data.model.pojo.Note;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class RealmNote extends RealmObject{
+public class RealmNote extends RealmObject {
     public static final String REPOSITORY_KEY = "itemKey";
 
     @PrimaryKey
@@ -16,6 +18,16 @@ public class RealmNote extends RealmObject{
         this.itemKey = itemKey;
         this.title = title;
         this.text = text;
+    }
+
+    public RealmNote(Note note) {
+        this.itemKey = note.getItemKey();
+        this.title = note.getTitle();
+        this.text = note.getText();
+    }
+
+    public Note toNote() {
+        return new Note(itemKey, title, text);
     }
 
     public RealmNote() {
