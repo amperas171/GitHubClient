@@ -18,8 +18,6 @@ import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
-import com.amperas17.wonderstest.data.provider.IProviderCaller;
-import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
@@ -29,16 +27,18 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class IssuesActivity extends AppCompatActivity implements IProviderCaller<RealmResults<RealmIssue>>  {
+public class IssuesActivity extends AppCompatActivity implements IIssuesView {
 
     public static final String REPOSITORY_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";
 
-    private IssuesProvider issuesProvider;
+    private IssuesPresenter presenter;
     private IssueAdapter issueAdapter;
 
-    @BindView(R.id.tvNoData) TextView tvNoData;
-    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.tvNoData)
+    TextView tvNoData;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isUpdating = false;
 
@@ -54,18 +54,18 @@ public class IssuesActivity extends AppCompatActivity implements IProviderCaller
         setContentView(R.layout.activity_issues);
         ButterKnife.bind(this);
 
-        issuesProvider = new IssuesProvider(this);
+        presenter = new IssuesPresenter(this);
 
         initActionBar();
         initSwipe();
         initRecyclerView();
 
-        issuesProvider.getIssuesByRepository(getRepositoryArg().getName());
-
         if (savedInstanceState != null) {
             isUpdating = savedInstanceState.getBoolean(IS_UPDATING_TAG);
             if (isUpdating) {
                 getIssues();
+            } else {
+                presenter.getIssuesByRepository(getRepositoryArg());
             }
         } else {
             getIssues();
@@ -75,7 +75,7 @@ public class IssuesActivity extends AppCompatActivity implements IProviderCaller
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getRepositoryArg().getName());
+            actionBar.setTitle(presenter.getActionBarTitle(getRepositoryArg()));
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -85,7 +85,7 @@ public class IssuesActivity extends AppCompatActivity implements IProviderCaller
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getIssues();
+                presenter.getIssuesAndUpdate(getRepositoryArg());
             }
         });
     }
@@ -94,13 +94,18 @@ public class IssuesActivity extends AppCompatActivity implements IProviderCaller
         issueAdapter = new IssueAdapter(new AdapterItemLongClickListener<Issue>() {
             @Override
             public void onItemLongClick(Issue issueItem) {
-                startActivity(NoteActivity.newIntent(IssuesActivity.this, issueItem));
+                presenter.onIssueLongItemClick(issueItem);
             }
         });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(issueAdapter);
+    }
+
+    @Override
+    public void openNoteActivity(Issue issueItem) {
+        startActivity(NoteActivity.newIntent(IssuesActivity.this, issueItem));
     }
 
     @Override
@@ -128,33 +133,32 @@ public class IssuesActivity extends AppCompatActivity implements IProviderCaller
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        issuesProvider.close();
+        presenter.onDestroy();
     }
 
     private void getIssues() {
-        swipeRefreshLayout.setRefreshing(true);
-        isUpdating = true;
-        issuesProvider.getIssuesAndUpdate(getRepositoryArg().getOwner().getLogin(), getRepositoryArg().getName());
+        presenter.getIssuesAndUpdate(getRepositoryArg());
     }
 
     @Override
-    public void onProviderCallSuccess(RealmResults<RealmIssue> issues) {
-        stopRefreshing();
-        setDataToAdapter(issues);
-    }
-
-    @Override
-    public void onProviderCallError(Throwable th) {
-        stopRefreshing();
+    public void showError(Throwable th) {
         Toast.makeText(this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
-    private void stopRefreshing() {
+    @Override
+    public void showRefreshing() {
+        swipeRefreshLayout.setRefreshing(true);
+        isUpdating = true;
+    }
+
+    @Override
+    public void hideRefreshing() {
         swipeRefreshLayout.setRefreshing(false);
         isUpdating = false;
     }
 
-    private void setDataToAdapter(RealmResults<RealmIssue> issues) {
+    @Override
+    public void setDataToAdapter(RealmResults<RealmIssue> issues) {
         if (issues == null) {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
