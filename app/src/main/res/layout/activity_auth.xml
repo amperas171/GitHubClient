@@ -17,8 +17,8 @@
         android:background="@drawable/shape_chip_drawable_blue"
         android:hint="@string/login_hint"
         android:maxLength="20"
-        android:text="amperas17"
         android:textColor="@color/primary_text"
+        android:textColorHint="@color/secondary_text"
         android:textSize="@dimen/text_size_big"
         android:textStyle="bold" />
 
@@ -31,8 +31,8 @@
         android:hint="@string/password_hint"
         android:inputType="textPassword"
         android:maxLength="20"
-        android:text="NOkia5800/"
-        android:textColor="@color/primary_text" />
+        android:textColor="@color/primary_text"
+        android:textColorHint="@color/secondary_text" />
 
     <Button
         android:id="@+id/btnNext"
