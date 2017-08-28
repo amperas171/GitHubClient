@@ -8,8 +8,6 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.User;
-import com.amperas17.wonderstest.data.provider.IProviderCaller;
-import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 
@@ -18,12 +16,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AuthActivity extends AppCompatActivity
-        implements LoadingDialog.ILoadingDialog, IProviderCaller<User> {
+        implements LoadingDialog.ILoadingDialog, IAuthView {
 
-    private UserProvider userProvider;
+    private IAuthPresenter presenter;
 
-    @BindView(R.id.etLogin) EditText etLogin;
-    @BindView(R.id.etPassword) EditText etPassword;
+    @BindView(R.id.etLogin)
+    EditText etLogin;
+    @BindView(R.id.etPassword)
+    EditText etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +31,14 @@ public class AuthActivity extends AppCompatActivity
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
 
-        userProvider = new UserProvider(this);
+        presenter = new AuthPresenter(this);
 
         initActionBar();
     }
 
     @OnClick(R.id.btnNext)
-    public void onNextClick(){
-        verifyFieldsAndAuth();
+    public void onNextClick() {
+        presenter.verifyFieldsAndAuth(etLogin.getText().toString(), etPassword.getText().toString());
     }
 
     private void initActionBar() {
@@ -49,57 +49,44 @@ public class AuthActivity extends AppCompatActivity
     }
 
     @Override
-    public void onProviderCallSuccess(User user) {
-        onAuthSuccess(user);
+    public void openRepositoriesActivity(User user) {
+        startActivity(RepositoriesActivity.newIntent(this, user));
+        finish();
     }
 
     @Override
-    public void onProviderCallError(Throwable th) {
-        onAuthError(th);
+    public void showLoginError() {
+        etLogin.setError(getString(R.string.empty_login));
+    }
+
+    @Override
+    public void showPasswordError() {
+        etPassword.setError(getString(R.string.empty_password));
+    }
+
+    @Override
+    public void showAuthError(Throwable th) {
+        Toast.makeText(AuthActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onLoadingDialogCancel() {
-        userProvider.close();
+        presenter.cancelLoading();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        userProvider.close();
+        presenter.onDestroy();
     }
 
-    private void verifyFieldsAndAuth() {
-        if (etLogin.getText().toString().isEmpty()) {
-            etLogin.setError(getString(R.string.empty_login));
-        } else if (etPassword.getText().toString().isEmpty()) {
-            etPassword.setError(getString(R.string.empty_password));
-        } else {
-            auth(etLogin.getText().toString(), etPassword.getText().toString());
-        }
-    }
-
-    public void auth(String login, String password) {
-        showLoadingDialog();
-        userProvider.getUser(login, password);
-    }
-
-    private void onAuthSuccess(User user) {
-        hideLoadingDialog();
-        startActivity(RepositoriesActivity.newIntent(this, user));
-        finish();
-    }
-
-    private void onAuthError(Throwable th) {
-        hideLoadingDialog();
-        Toast.makeText(AuthActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void showLoadingDialog(){
+    @Override
+    public void showLoader() {
         LoadingDialog.show(getSupportFragmentManager());
     }
 
-    private void hideLoadingDialog(){
+    @Override
+    public void hideLoader() {
         LoadingDialog.show(getSupportFragmentManager());
     }
 }

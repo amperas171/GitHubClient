@@ -2,14 +2,11 @@ package com.amperas17.wonderstest.ui.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.User;
-import com.amperas17.wonderstest.data.provider.IProviderCaller;
-import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 
@@ -30,7 +27,6 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
     @Override
     public void showError(Throwable th) {
         Toast.makeText(SplashActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
