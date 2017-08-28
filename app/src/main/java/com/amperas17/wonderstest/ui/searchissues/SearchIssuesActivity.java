@@ -19,6 +19,8 @@ import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
 public class SearchIssuesActivity extends AppCompatActivity implements IssuesProvider.IProviderCaller {
@@ -29,7 +31,7 @@ public class SearchIssuesActivity extends AppCompatActivity implements IssuesPro
     private IssuesProvider issuesProvider;
     private IssueAdapter issueAdapter;
 
-    private TextView tvNoData;
+    @BindView(R.id.tvNoData) TextView tvNoData;
     private SearchView searchView;
 
     private boolean isSearching = false;
@@ -39,13 +41,11 @@ public class SearchIssuesActivity extends AppCompatActivity implements IssuesPro
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_issues);
+        ButterKnife.bind(this);
 
         issuesProvider = new IssuesProvider(this);
 
         initActionBar();
-
-        tvNoData = (TextView) findViewById(R.id.tvNoData);
-
         initRecyclerView();
 
         issuesProvider.getIssues();

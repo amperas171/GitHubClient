@@ -16,6 +16,8 @@ import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
 import org.apmem.tools.layouts.FlowLayout;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
 public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> {
@@ -58,17 +60,14 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvIssueTitle;
-        private TextView tvBody;
-        private TextView tvNoLabels;
-        private FlowLayout fl;
+        @BindView(R.id.tvIssueTitle) TextView tvIssueTitle;
+        @BindView(R.id.tvBody) TextView tvBody;
+        @BindView(R.id.tvNoLabels) TextView tvNoLabels;
+        @BindView(R.id.flLabelsContainer) FlowLayout flLabelsContainer;
 
         private ViewHolder(final View itemView) {
             super(itemView);
-            tvIssueTitle = (TextView) itemView.findViewById(R.id.tvIssueTitle);
-            tvBody = (TextView) itemView.findViewById(R.id.tvBody);
-            tvNoLabels = (TextView) itemView.findViewById(R.id.tvNoLabels);
-            fl = (FlowLayout) itemView.findViewById(R.id.flLabelsContainer);
+            ButterKnife.bind(this, itemView);
         }
 
         private void bind(final RealmIssue item, final AdapterItemLongClickListener<Issue> listener) {
@@ -81,14 +80,14 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
 
             if (item.getLabels().isEmpty()) {
                 tvNoLabels.setVisibility(View.VISIBLE);
-                fl.removeAllViews();
+                flLabelsContainer.removeAllViews();
             } else {
                 tvNoLabels.setVisibility(View.GONE);
                 LayoutInflater li = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                fl.removeAllViews();
+                flLabelsContainer.removeAllViews();
                 for (int i = 0; i < item.getLabels().size(); i++) {
-                    CardView view = (CardView) li.inflate(R.layout.item_label, fl, false);
+                    CardView view = (CardView) li.inflate(R.layout.item_label, flLabelsContainer, false);
                     TextView textView = (TextView) view.findViewById(R.id.tvLabelName);
                     textView.setText(item.getLabels().get(i).getName());
                     String colorStr = item.getLabels().get(i).getColor();
@@ -98,7 +97,7 @@ public class IssueAdapter extends RecyclerView.Adapter<IssueAdapter.ViewHolder> 
                         textView.setTextColor(Color.WHITE);
                     }
                     view.setCardBackgroundColor(Color.parseColor('#' + colorStr));
-                    fl.addView(view);
+                    flLabelsContainer.addView(view);
                 }
             }
 

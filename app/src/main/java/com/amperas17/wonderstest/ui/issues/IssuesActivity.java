@@ -22,6 +22,8 @@ import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
@@ -32,11 +34,10 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     public static final String IS_UPDATING_TAG = "isUpdating";
 
     private IssuesProvider issuesProvider;
-
     private IssueAdapter issueAdapter;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView tvNoData;
+    @BindView(R.id.tvNoData) TextView tvNoData;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isUpdating = false;
 
@@ -50,13 +51,11 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_issues);
+        ButterKnife.bind(this);
 
         issuesProvider = new IssuesProvider(this);
 
         initActionBar();
-
-        tvNoData = (TextView) findViewById(R.id.tvNoData);
-
         initSwipe();
         initRecyclerView();
 
@@ -81,7 +80,6 @@ public class IssuesActivity extends AppCompatActivity implements IssuesProvider.
     }
 
     private void initSwipe() {
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

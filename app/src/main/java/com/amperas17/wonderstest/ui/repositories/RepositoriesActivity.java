@@ -32,8 +32,8 @@ import com.amperas17.wonderstest.ui.issues.IssuesActivity;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.searchissues.SearchIssuesActivity;
 
-import java.util.ArrayList;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
@@ -49,8 +49,8 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
 
     private RepositoryAdapter repositoryAdapter;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView tvNoData;
+    @BindView(R.id.tvNoData) TextView tvNoData;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isUpdating = false;
 
@@ -64,16 +64,12 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+        ButterKnife.bind(this);
 
-        //repositoryCache = new RepositoryCache();
         userCacheEraser = new UserCacheEraser(this);
-        //repositoriesLoader = new RepositoriesLoader(this);
         repositoriesProvider = new RepositoriesProvider(this);
 
         initActionBar();
-
-        tvNoData = (TextView) findViewById(R.id.tvNoData);
-
         initSwipe();
         initRecyclerView();
 
@@ -100,7 +96,6 @@ public class RepositoriesActivity extends AppCompatActivity implements LoadingDi
     }
 
     private void initSwipe() {
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

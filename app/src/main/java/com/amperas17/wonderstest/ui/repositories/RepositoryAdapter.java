@@ -13,6 +13,8 @@ import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.realm.RealmRepository;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
 public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.ViewHolder> {
@@ -55,13 +57,14 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Vi
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvRepositoryName;
-        private TextView tvPrivacy;
-        private TextView tvDescription;
-        private RelativeLayout rlRepositoryContainer;
+        @BindView(R.id.tvRepositoryName) TextView tvRepositoryName;
+        @BindView(R.id.tvPrivacy) TextView tvPrivacy;
+        @BindView(R.id.tvDescription) TextView tvDescription;
+        @BindView(R.id.rlRepositoryContainer) RelativeLayout rlRepositoryContainer;
 
         private ViewHolder(final View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             tvRepositoryName = (TextView) itemView.findViewById(R.id.tvRepositoryName);
             tvPrivacy = (TextView) itemView.findViewById(R.id.tvPrivacy);
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);

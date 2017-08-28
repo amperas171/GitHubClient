@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -19,6 +17,10 @@ import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.realm.RealmNote;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
+
 
 public class NoteActivity extends AppCompatActivity {
 
@@ -26,8 +28,8 @@ public class NoteActivity extends AppCompatActivity {
 
     private NoteCache noteCache;
 
-    private EditText etTitle;
-    private EditText etText;
+    @BindView(R.id.etTitle) EditText etTitle;
+    @BindView(R.id.etText) EditText etText;
 
     public static Intent newIntent(Context context, Parcelable itemKey) {
         Intent intent = new Intent(context, NoteActivity.class);
@@ -39,18 +41,23 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        ButterKnife.bind(this);
 
         noteCache = new NoteCache();
 
         initActionBar();
 
-        etTitle = (EditText) findViewById(R.id.etTitle);
-        etText = (EditText) findViewById(R.id.etText);
+        reflectNote();
+    }
 
-        fillFields();
+    @OnTextChanged(R.id.etTitle)
+    protected void onTitleChanged(CharSequence text) {
+        saveNote();
+    }
 
-        etTitle.addTextChangedListener(noteWatcher);
-        etText.addTextChangedListener(noteWatcher);
+    @OnTextChanged(R.id.etText)
+    protected void onTextChanged(CharSequence text) {
+        saveNote();
     }
 
     private void initActionBar() {
@@ -84,7 +91,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
 
-    private void fillFields() {
+    private void reflectNote() {
         RealmNote note = noteCache.getNote(getItemKey());
         if (note != null) {
             etTitle.setText(note.getTitle());
@@ -106,19 +113,7 @@ public class NoteActivity extends AppCompatActivity {
         return "";
     }
 
-    private TextWatcher noteWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            noteCache.setNote(getItemKey(), etTitle.getText().toString(), etText.getText().toString());
-        }
-    };
-
+    private void saveNote(){
+        noteCache.setNote(getItemKey(), etTitle.getText().toString(), etText.getText().toString());
+    }
 }

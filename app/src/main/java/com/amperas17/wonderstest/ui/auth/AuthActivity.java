@@ -3,8 +3,6 @@ package com.amperas17.wonderstest.ui.auth;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,33 +12,32 @@ import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class AuthActivity extends AppCompatActivity
         implements LoadingDialog.ILoadingDialog, UserProvider.IProviderCaller  {
 
-    private EditText etLogin;
-    private EditText etPassword;
-    private Button btnNext;
-
     private UserProvider userProvider;
+
+    @BindView(R.id.etLogin) EditText etLogin;
+    @BindView(R.id.etPassword) EditText etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        ButterKnife.bind(this);
 
         userProvider = new UserProvider(this);
 
         initActionBar();
+    }
 
-        etLogin = (EditText) findViewById(R.id.etLogin);
-        etPassword = (EditText) findViewById(R.id.etPassword);
-        btnNext = (Button) findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verifyFieldsAndAuth();
-            }
-        });
+    @OnClick(R.id.btnNext)
+    public void onNextClick(){
+        verifyFieldsAndAuth();
     }
 
     private void initActionBar() {
