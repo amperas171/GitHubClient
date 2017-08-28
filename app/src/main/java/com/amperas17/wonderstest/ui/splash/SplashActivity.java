@@ -8,70 +8,46 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.User;
+import com.amperas17.wonderstest.data.provider.IProviderCaller;
 import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
 import com.amperas17.wonderstest.ui.auth.AuthActivity;
 
 
-public class SplashActivity extends AppCompatActivity implements UserProvider.IProviderCaller {
+public class SplashActivity extends AppCompatActivity implements ISplashView {
 
-    public static final int DELAY = 2000;
-
-    private UserProvider userProvider;
-    private Handler handler;
+    private ISplashPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        userProvider = new UserProvider(this);
-
-        handler = new Handler();
-        handler.postDelayed(checkUserRunnable, DELAY);
-    }
-
-    private void checkUserAndOpenActivity() {
-        userProvider.checkIfUserExist();
+        presenter = new SplashPresenter(this);
+        presenter.onCreate();
     }
 
     @Override
-    public void onProviderCallSuccess(User user) {
-        doOnSuccess(user);
-    }
-
-    @Override
-    public void onProviderCallError(Throwable th) {
+    public void showError(Throwable th) {
         Toast.makeText(SplashActivity.this, th.getMessage(), Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void openAuthActivity() {
+        startActivity(new Intent(SplashActivity.this, AuthActivity.class));
+        SplashActivity.this.finish();
+    }
+
+    @Override
+    public void openUserInfoActivity(User user) {
+        startActivity(RepositoriesActivity.newIntent(SplashActivity.this, user));
+        SplashActivity.this.finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        userProvider.close();
-        handler.removeCallbacks(checkUserRunnable);
+        presenter.onDestroy();
     }
-
-    private void doOnSuccess(User user){
-        if (user != null) openUserInfoActivity(user);
-        else openAuthActivity();
-    }
-
-    private void openAuthActivity() {
-        startActivity(new Intent(SplashActivity.this, AuthActivity.class));
-        SplashActivity.this.finish();
-    }
-
-    private void openUserInfoActivity(User user) {
-        startActivity(RepositoriesActivity.newIntent(SplashActivity.this, user));
-        SplashActivity.this.finish();
-    }
-
-    private Runnable checkUserRunnable = new Runnable() {
-        @Override
-        public void run() {
-            checkUserAndOpenActivity();
-        }
-    };
-
 }
