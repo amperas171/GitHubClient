@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.provider.IProviderCaller;
 import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
@@ -23,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
-public class SearchIssuesActivity extends AppCompatActivity implements IssuesProvider.IProviderCaller {
+public class SearchIssuesActivity extends AppCompatActivity implements IProviderCaller<RealmResults<RealmIssue>> {
 
     public static final String SEARCH_QUERY = "query";
     public static final String IS_SEARCHING_TAG = "isSearching";

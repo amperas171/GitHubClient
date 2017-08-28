@@ -18,6 +18,7 @@ import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
+import com.amperas17.wonderstest.data.provider.IProviderCaller;
 import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
@@ -28,7 +29,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
-public class IssuesActivity extends AppCompatActivity implements IssuesProvider.IProviderCaller /*IssuesLoader.IIssuesLoaderCaller*/  {
+public class IssuesActivity extends AppCompatActivity implements IProviderCaller<RealmResults<RealmIssue>>  {
 
     public static final String REPOSITORY_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";

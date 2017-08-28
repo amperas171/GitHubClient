@@ -11,11 +11,11 @@ import java.lang.ref.WeakReference;
 
 public class UserProvider implements UserLoader.IUserLoaderCaller, UserCache.ICachedUserCaller {
 
-    private WeakReference<IProviderCaller> callerRef;
+    private WeakReference<IProviderCaller<User>> callerRef;
     private UserCache userCache;
     private UserLoader userLoader;
 
-    public UserProvider(IProviderCaller caller) {
+    public UserProvider(IProviderCaller<User> caller) {
         callerRef = new WeakReference<>(caller);
         userCache = new UserCache(this);
         userLoader = new UserLoader(this);
@@ -59,11 +59,5 @@ public class UserProvider implements UserLoader.IUserLoaderCaller, UserCache.ICa
     public void close() {
         userCache.close();
         userLoader.cancel();
-    }
-
-    public interface IProviderCaller {
-        void onProviderCallSuccess(User user);
-
-        void onProviderCallError(Throwable th);
     }
 }

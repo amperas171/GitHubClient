@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.User;
+import com.amperas17.wonderstest.data.provider.IProviderCaller;
 import com.amperas17.wonderstest.data.provider.UserProvider;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
 import com.amperas17.wonderstest.ui.repositories.RepositoriesActivity;
@@ -17,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AuthActivity extends AppCompatActivity
-        implements LoadingDialog.ILoadingDialog, UserProvider.IProviderCaller  {
+        implements LoadingDialog.ILoadingDialog, IProviderCaller<User> {
 
     private UserProvider userProvider;
 

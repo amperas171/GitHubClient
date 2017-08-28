@@ -13,13 +13,13 @@ import io.realm.RealmResults;
 
 public class IssuesProvider implements IssuesLoader.IIssuesLoaderCaller {
 
-    private WeakReference<IProviderCaller> callerRef;
+    private WeakReference<IProviderCaller<RealmResults<RealmIssue>>> callerRef;
     private IssuesCache issuesCache;
     private IssuesLoader issuesLoader;
 
     private String repositoryName;
 
-    public IssuesProvider(IProviderCaller caller) {
+    public IssuesProvider(IProviderCaller<RealmResults<RealmIssue>> caller) {
         callerRef = new WeakReference<>(caller);
         issuesCache = new IssuesCache();
         issuesLoader = new IssuesLoader(this);
@@ -74,11 +74,5 @@ public class IssuesProvider implements IssuesLoader.IIssuesLoaderCaller {
     public void close() {
         issuesCache.close();
         issuesLoader.cancel();
-    }
-
-    public interface IProviderCaller {
-        void onProviderCallSuccess(RealmResults<RealmIssue> issues);
-
-        void onProviderCallError(Throwable th);
     }
 }

@@ -18,12 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amperas17.wonderstest.R;
-import com.amperas17.wonderstest.data.loader.RepositoriesLoader;
-import com.amperas17.wonderstest.data.cache.RepositoryCache;
 import com.amperas17.wonderstest.data.cache.UserCacheEraser;
 import com.amperas17.wonderstest.data.model.pojo.Repository;
 import com.amperas17.wonderstest.data.model.pojo.User;
 import com.amperas17.wonderstest.data.model.realm.RealmRepository;
+import com.amperas17.wonderstest.data.provider.IProviderCaller;
 import com.amperas17.wonderstest.data.provider.RepositoriesProvider;
 import com.amperas17.wonderstest.ui.utils.AdapterItemClicksListener;
 import com.amperas17.wonderstest.ui.utils.LoadingDialog;
@@ -39,7 +38,7 @@ import io.realm.RealmResults;
 
 
 public class RepositoriesActivity extends AppCompatActivity implements LoadingDialog.ILoadingDialog,
-        UserCacheEraser.IUserCacheEraseCaller, RepositoriesProvider.IProviderCaller {
+        UserCacheEraser.IUserCacheEraseCaller, IProviderCaller<RealmResults<RealmRepository>> {
 
     public static final String USER_ARG = "user";
     public static final String IS_UPDATING_TAG = "isUpdating";

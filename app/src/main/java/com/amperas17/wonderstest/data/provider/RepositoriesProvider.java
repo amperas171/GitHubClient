@@ -13,13 +13,13 @@ import io.realm.RealmResults;
 
 public class RepositoriesProvider implements RepositoriesLoader.IRepositoriesLoaderCaller {
 
-    private WeakReference<IProviderCaller> callerRef;
+    private WeakReference<IProviderCaller<RealmResults<RealmRepository>>> callerRef;
     private RepositoryCache repositoryCache;
     private RepositoriesLoader repositoriesLoader;
 
     private String userLogin;
 
-    public RepositoriesProvider(IProviderCaller caller) {
+    public RepositoriesProvider(IProviderCaller<RealmResults<RealmRepository>> caller) {
         callerRef = new WeakReference<>(caller);
         repositoryCache = new RepositoryCache();
         repositoriesLoader = new RepositoriesLoader(this);
@@ -62,9 +62,9 @@ public class RepositoriesProvider implements RepositoriesLoader.IRepositoriesLoa
         repositoriesLoader.cancel();
     }
 
-    public interface IProviderCaller {
+    /*public interface IProviderCaller {
         void onProviderCallSuccess(RealmResults<RealmRepository> repositories);
 
         void onProviderCallError(Throwable th);
-    }
+    }*/
 }
