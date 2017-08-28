@@ -14,8 +14,6 @@ import android.widget.TextView;
 import com.amperas17.wonderstest.R;
 import com.amperas17.wonderstest.data.model.pojo.Issue;
 import com.amperas17.wonderstest.data.model.realm.RealmIssue;
-import com.amperas17.wonderstest.data.provider.IProviderCaller;
-import com.amperas17.wonderstest.data.provider.IssuesProvider;
 import com.amperas17.wonderstest.ui.issues.IssueAdapter;
 import com.amperas17.wonderstest.ui.note.NoteActivity;
 import com.amperas17.wonderstest.ui.utils.AdapterItemLongClickListener;
@@ -24,15 +22,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
-public class SearchIssuesActivity extends AppCompatActivity implements IProviderCaller<RealmResults<RealmIssue>> {
+public class SearchIssuesActivity extends AppCompatActivity implements ISearchIssuesView {
 
     public static final String SEARCH_QUERY = "query";
     public static final String IS_SEARCHING_TAG = "isSearching";
 
-    private IssuesProvider issuesProvider;
+    private ISearchIssuesPresenter presenter;
     private IssueAdapter issueAdapter;
 
-    @BindView(R.id.tvNoData) TextView tvNoData;
+    @BindView(R.id.tvNoData)
+    TextView tvNoData;
     private SearchView searchView;
 
     private boolean isSearching = false;
@@ -44,12 +43,12 @@ public class SearchIssuesActivity extends AppCompatActivity implements IProvider
         setContentView(R.layout.activity_search_issues);
         ButterKnife.bind(this);
 
-        issuesProvider = new IssuesProvider(this);
+        presenter = new SearchIssuesPresenter(this);
 
         initActionBar();
         initRecyclerView();
 
-        issuesProvider.getIssues();
+        presenter.getIssues();
 
         if (savedInstanceState != null) {
             isSearching = savedInstanceState.getBoolean(IS_SEARCHING_TAG, false);
@@ -71,13 +70,18 @@ public class SearchIssuesActivity extends AppCompatActivity implements IProvider
         issueAdapter = new IssueAdapter(new AdapterItemLongClickListener<Issue>() {
             @Override
             public void onItemLongClick(Issue issueItem) {
-                startActivity(NoteActivity.newIntent(SearchIssuesActivity.this, issueItem));
+                presenter.onIssueLongItemClick(issueItem);
             }
         });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvIssuesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(issueAdapter);
+    }
+
+    @Override
+    public void openNoteActivity(Issue issueItem) {
+        startActivity(NoteActivity.newIntent(SearchIssuesActivity.this, issueItem));
     }
 
     @Override
@@ -115,23 +119,9 @@ public class SearchIssuesActivity extends AppCompatActivity implements IProvider
         return true;
     }
 
-    @Override
-    public void onProviderCallSuccess(RealmResults<RealmIssue> issues) {
-        setDataToAdapter(issues);
-    }
-
-    @Override
-    public void onProviderCallError(Throwable th) {
-
-    }
-
-    private void onQueryTextChanged(String pattern) {
-        query = pattern;
-        if (!pattern.isEmpty()) {
-            issuesProvider.getSearchedIssues(pattern);
-        } else {
-            issuesProvider.getIssues();
-        }
+    private void onQueryTextChanged(String newText) {
+        query = newText;
+        presenter.onQueryTextChange(newText);
     }
 
     @Override
@@ -150,17 +140,18 @@ public class SearchIssuesActivity extends AppCompatActivity implements IProvider
         if (!searchView.isIconified()) {
             searchView.setQuery("", false);
             searchView.setIconified(true);
-            issuesProvider.getIssues();
+            presenter.getIssues();
         } else super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        issuesProvider.close();
+        presenter.onDestroy();
     }
 
-    private void setDataToAdapter(RealmResults<RealmIssue> issues) {
+    @Override
+    public void setDataToAdapter(RealmResults<RealmIssue> issues) {
         if (issues == null || issues.isEmpty()) {
             tvNoData.setVisibility(View.VISIBLE);
         } else {
