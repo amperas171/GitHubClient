@@ -10,7 +10,7 @@ import com.amperas17.wonderstest.data.provider.UserProvider;
 import java.lang.ref.WeakReference;
 
 public class SplashPresenter implements ISplashPresenter, IProviderCaller<User> {
-    private static final int DELAY = 3000;
+    private static final int DELAY = 3;
 
     private WeakReference<ISplashView> viewRef;
     private UserProvider userProvider;
