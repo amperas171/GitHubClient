@@ -4,13 +4,23 @@ package com.amperas17.wonderstest.ui.note;
 import android.os.Parcelable;
 
 public interface INotePresenter {
-    void onCreate(Parcelable item);
+    void onCreate();
 
-    String getItemKey(Parcelable item);
+    String getItemName();
 
-    String getItemName(Parcelable item);
+    void saveNote(String title, String text, String imagePath);
 
-    void saveNote(Parcelable keyArg, String title, String text);
+    void saveNoteTitle(String title);
+
+    void saveNoteText(String text);
+
+    void saveNoteImagePath(String imagePath);
+
+    void onImageClick();
+
+    void onImageLongClick();
+
+    void onGetImagePathFromGallery(String path);
 
     void onDestroy();
 }

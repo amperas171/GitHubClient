@@ -14,15 +14,66 @@ public class NoteCache {
     }
 
     public RealmNote getNote(String itemKey) {
-        return realm.where(RealmNote.class).equalTo(RealmNote.REPOSITORY_KEY, itemKey).findFirst();
+        return realm.where(RealmNote.class).equalTo(RealmNote.ITEM_KEY, itemKey).findFirst();
     }
 
-    public void setNote(String itemKey, String title, String text) {
+    public void setNote(String itemKey, String title, String text, String imagePath) {
         if (!realm.isClosed()) {
-            final RealmNote note = new RealmNote(itemKey, title, text);
+            final RealmNote note = new RealmNote(itemKey, title, text, imagePath);
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
+                    realm.insertOrUpdate(note);
+                }
+            });
+        }
+    }
+
+    public void setNoteText(final String itemKey, final String text){
+        if (!realm.isClosed()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmNote note = realm.where(RealmNote.class).equalTo(RealmNote.ITEM_KEY, itemKey).findFirst();
+                    if (note == null){
+                        note = new RealmNote(itemKey, "", text, "");
+                    } else {
+                        note.setText(text);
+                    }
+                    realm.insertOrUpdate(note);
+                }
+            });
+        }
+    }
+
+    public void setNoteTitle(final String itemKey, final String title){
+        if (!realm.isClosed()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmNote note = realm.where(RealmNote.class).equalTo(RealmNote.ITEM_KEY, itemKey).findFirst();
+                    if (note == null){
+                        note = new RealmNote(itemKey, title, "", "");
+                    } else {
+                        note.setTitle(title);
+                    }
+                    realm.insertOrUpdate(note);
+                }
+            });
+        }
+    }
+
+    public void setNoteImagePath(final String itemKey, final String imagePath){
+        if (!realm.isClosed()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmNote note = realm.where(RealmNote.class).equalTo(RealmNote.ITEM_KEY, itemKey).findFirst();
+                    if (note == null){
+                        note = new RealmNote(itemKey, "", "", imagePath);
+                    } else {
+                        note.setImagePath(imagePath);
+                    }
                     realm.insertOrUpdate(note);
                 }
             });

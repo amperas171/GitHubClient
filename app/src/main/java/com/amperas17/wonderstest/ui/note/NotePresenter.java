@@ -1,6 +1,5 @@
 package com.amperas17.wonderstest.ui.note;
 
-
 import android.os.Parcelable;
 
 import com.amperas17.wonderstest.data.cache.NoteCache;
@@ -21,34 +20,92 @@ public class NotePresenter implements INotePresenter {
     }
 
     @Override
-    public void onCreate(Parcelable item) {
-        getNote(item);
-    }
-
-    private void getNote(Parcelable item){
-        RealmNote realmNote = noteCache.getNote(getItemKey(item));
-        if (realmNote != null && viewRef.get()!=null) {
-            viewRef.get().reflectNote(realmNote.toNote());
+    public void onCreate() {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            getNote(view.getKeyArg());
         }
     }
 
-    @Override
-    public String getItemKey(Parcelable item) {
+    private void getNote(Parcelable item) {
+        RealmNote realmNote = noteCache.getNote(getItemKey(item));
+        if (realmNote != null) {
+            INoteView view = viewRef.get();
+            if (view != null)
+                view.reflectNote(realmNote.toNote());
+        }
+    }
+
+    private String getItemKey(Parcelable item) {
         if (item instanceof Repository) return ((Repository) item).getName();
         if (item instanceof Issue) return ((Issue) item).getId().toString();
         return "";
     }
 
     @Override
-    public String getItemName(Parcelable item) {
-        if (item instanceof Repository) return ((Repository) item).getName();
-        if (item instanceof Issue) return ((Issue) item).getTitle();
+    public String getItemName() {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            Parcelable item = view.getKeyArg();
+            if (item instanceof Repository) return ((Repository) item).getName();
+            if (item instanceof Issue) return ((Issue) item).getTitle();
+        }
         return "";
     }
 
     @Override
-    public void saveNote(Parcelable keyArg, String title, String text) {
-        noteCache.setNote(getItemKey(keyArg), title, text);
+    public void onImageClick() {
+        INoteView view = viewRef.get();
+        if (view != null)
+            view.getPicture();
+    }
+
+    @Override
+    public void onImageLongClick() {
+        INoteView view = viewRef.get();
+        if (view != null)
+            view.getCameraPhoto();
+    }
+
+    @Override
+    public void onGetImagePathFromGallery(String path) {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            view.setImage(path);
+            noteCache.setNoteImagePath(getItemKey(view.getKeyArg()), path);
+        }
+    }
+
+    @Override
+    public void saveNote(String title, String text, String imagePath) {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            noteCache.setNote(getItemKey(view.getKeyArg()), title, text, imagePath);
+        }
+    }
+
+    @Override
+    public void saveNoteTitle(String title) {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            noteCache.setNoteTitle(getItemKey(view.getKeyArg()), title);
+        }
+    }
+
+    @Override
+    public void saveNoteText(String text) {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            noteCache.setNoteText(getItemKey(view.getKeyArg()), text);
+        }
+    }
+
+    @Override
+    public void saveNoteImagePath(String imagePath) {
+        INoteView view = viewRef.get();
+        if (view != null) {
+            noteCache.setNoteImagePath(getItemKey(view.getKeyArg()), imagePath);
+        }
     }
 
     @Override

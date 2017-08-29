@@ -5,11 +5,13 @@ public class Note {
     private String itemKey;
     private String title;
     private String text;
+    private String imagePath;
 
-    public Note(String itemKey, String title, String text) {
+    public Note(String itemKey, String title, String text, String imagePath) {
         this.itemKey = itemKey;
         this.title = title;
         this.text = text;
+        this.imagePath = imagePath;
     }
 
     public String getItemKey() {
@@ -35,4 +37,14 @@ public class Note {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+
 }
