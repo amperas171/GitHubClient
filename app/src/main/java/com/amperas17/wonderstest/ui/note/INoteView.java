@@ -15,5 +15,4 @@ public interface INoteView {
     String getText();
     String getTitleText();
     Parcelable getKeyArg();
-    //String getImagePath();
 }
