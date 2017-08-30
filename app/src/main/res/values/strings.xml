@@ -21,4 +21,7 @@
     <string name="text_hint">Text</string>
     <string name="welcome">Welcome to WondersApp!</string>
     <string name="glad_to_see_you">Glad to see you again!</string>
+    <string name="rationale_camera">Camera permission is needed to make a photo</string>
+    <string name="rationale_read_storage">Read storage permission is needed for storing files</string>
+    <string name="rationale_write_storage">Write storage permission is needed for attaching files</string>
 </resources>
