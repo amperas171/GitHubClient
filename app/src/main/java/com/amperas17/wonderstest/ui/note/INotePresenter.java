@@ -1,7 +1,7 @@
 package com.amperas17.wonderstest.ui.note;
 
 
-import android.os.Parcelable;
+import android.net.Uri;
 
 public interface INotePresenter {
     void onCreate();
@@ -20,7 +20,9 @@ public interface INotePresenter {
 
     void onImageLongClick();
 
-    void onGetImagePathFromGallery(String path);
+    void onGetImageFromGallery(Uri uri);
+
+    void onGetImageFromCamera();
 
     void onDestroy();
 }
